@@ -1,0 +1,50 @@
+/* Reset box-sizing and margins/padding */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove list styles (optional) */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Remove anchor text decoration (optional) */
+a {
+  text-decoration: none;
+}
+
+/* Reset heading margins (optional) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: normal;
+}
+
+/* Reset paragraphs (optional) */
+p {
+  margin: 0;
+}
+
+/* Additional resets for form elements (optional) */
+input,
+textarea,
+button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  appearance: none;
+  /* Remove default styles in modern browsers */
+}
