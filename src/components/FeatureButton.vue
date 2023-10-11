@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from "vue";
 import { storeToRefs } from "pinia";
-import { useUserDataStore } from "@/stores/userData";
+import { useUserDataStore } from "@/stores/user-data";
 
 const userDataStore = useUserDataStore();
 const { getCurrentPosition } = useUserDataStore();
@@ -50,7 +50,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
               id="city"
               name="city"
             >
-              <option disabled value="">選擇縣市</option>
+              <option value="" disabled selected>選擇縣市</option>
               <option>台北市</option>
               <option>新北市</option>
               <option>桃園市</option>
@@ -84,7 +84,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
               id="monster"
               name="monster"
             >
-              <option value="">選擇魔物</option>
+              <option value="" disabled selected>選擇魔物</option>
               <option>大凶豺龍</option>
               <option>搔鳥</option>
               <option>毒妖鳥</option>
