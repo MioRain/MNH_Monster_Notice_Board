@@ -1,9 +1,19 @@
+<script setup>
+import { storeToRefs } from "pinia";
+import { useUserDataStore } from "@/stores/userData";
+
+const userDataStore = useUserDataStore();
+const { getCurrentPosition } = useUserDataStore();
+const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
+
+</script>
+
 <template>
   <div class="container">
     <button class="announce">發布</button>
     <button class="city">城市</button>
     <button class="monster">魔物</button>
-    <button class="search">搜尋</button>
+    <button class="search" @click="getCurrentPosition">搜尋</button>
   </div>
 </template>
 
