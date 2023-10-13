@@ -2,10 +2,13 @@
 import { reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
+import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 
 const userDataStore = useUserDataStore();
 const { getCurrentPosition } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
+
+const { eyewitnessInfo } = useEyewitnessInfoStore();
 
 </script>
 
@@ -49,6 +52,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
               class="form-control"
               id="city"
               name="city"
+              v-model="eyewitnessInfo.cityName"
             >
               <option value="" disabled selected>選擇縣市</option>
               <option>台北市</option>
@@ -79,11 +83,8 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 
           <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">目擊魔物</span>
-            <select
-              class="form-control"
-              id="monster"
-              name="monster"
-            >
+            <select class="form-control" id="monster" name="monster" 
+              v-model="eyewitnessInfo.monsterName">
               <option value="" disabled selected>選擇魔物</option>
               <option>大凶豺龍</option>
               <option>搔鳥</option>
@@ -115,6 +116,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
               min="1"
               max="999"
               inputmode="numeric"
+              v-model="eyewitnessInfo.round"
             />
           </div>
 
@@ -129,6 +131,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
               min="1"
               max="10"
               inputmode="numeric"
+              v-model="eyewitnessInfo.rare"
             />
           </div>
         </div>
