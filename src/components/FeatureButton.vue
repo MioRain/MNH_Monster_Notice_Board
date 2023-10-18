@@ -3,13 +3,51 @@ import { reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
+import axios from "axios";
 
 const userDataStore = useUserDataStore();
-const { getCurrentPosition } = useUserDataStore();
+const { getCurrentPosition, getSheetName } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 
 const { eyewitnessInfo } = useEyewitnessInfoStore();
 
+const handleSubmit = async () => {
+  await getCurrentPosition();
+
+  const today = new Date();
+  const todayData = {
+    year: String(today.getFullYear()),
+    month: String(today.getMonth() + 1).padStart(2, "0"),
+    date: String(today.getDate()).padStart(2, "0"),
+    hour: String(today.getHours()).padStart(2, "0"),
+    minute: String(today.getMinutes()).padStart(2, "0"),
+  };
+  const time = `${todayData.year}/${todayData.month}/${todayData.date} ${todayData.hour}:${todayData.minute}`;
+  const sheetName = getSheetName(todayData.hour);
+
+  const payload = {
+    sheetName,
+    time,
+    cityName: eyewitnessInfo.cityName,
+    monsterName: eyewitnessInfo.monsterName,
+    round: eyewitnessInfo.round,
+    rare: eyewitnessInfo.rare,
+    latitude: currentLatitude.value,
+    longitude: currentLongitude.value,
+    mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
+  };
+
+  const url =
+    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
+
+  const res = await axios.post(url, payload, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+  
+  alert(res.data);
+};
 </script>
 
 <template>
@@ -83,8 +121,12 @@ const { eyewitnessInfo } = useEyewitnessInfoStore();
 
           <div class="input-group mb-3">
             <span class="input-group-text" id="inputGroup-sizing-default">目擊魔物</span>
-            <select class="form-control" id="monster" name="monster" 
-              v-model="eyewitnessInfo.monsterName">
+            <select
+              class="form-control"
+              id="monster"
+              name="monster"
+              v-model="eyewitnessInfo.monsterName"
+            >
               <option value="" disabled selected>選擇魔物</option>
               <option>大凶豺龍</option>
               <option>搔鳥</option>
@@ -140,7 +182,13 @@ const { eyewitnessInfo } = useEyewitnessInfoStore();
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button type="button" class="btn btn-primary announce-submit">送出</button>
+          <button
+            type="button"
+            class="btn btn-primary announce-submit"
+            @click="handleSubmit"
+          >
+            送出
+          </button>
         </div>
       </div>
     </div>

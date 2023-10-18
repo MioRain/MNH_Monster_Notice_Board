@@ -6,7 +6,6 @@ export const useUserDataStore = defineStore('user-data', () => {
   const currentLongitude = ref(0)
 
   function getCurrentPosition() {
-    console.log('func')
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         position => {
