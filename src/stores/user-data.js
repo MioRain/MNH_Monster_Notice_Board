@@ -6,25 +6,20 @@ export const useUserDataStore = defineStore('user-data', () => {
   const currentLongitude = ref(0)
 
   function getCurrentPosition() {
-    if ("geolocation" in navigator) {
-      /* geolocation is available */
-      function success(pos) {
-        currentLatitude.value = pos.coords.latitude
-        currentLongitude.value = pos.coords.longitude
-  
-        console.log(`Your current position is: ${currentLatitude.value}, ${currentLongitude.value}`)
-      }
-  
-      function error(err) {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-      }
-      
-      navigator.geolocation.getCurrentPosition(success, error);
-      
-    } else {
-      /* geolocation IS NOT available */
-      alert("Sorry, geolocation IS NOT available.");
-    }
+    console.log('func')
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          currentLatitude.value = position.coords.latitude
+          currentLongitude.value = position.coords.longitude
+          return resolve(position)
+        },
+        error => {
+          console.warn(`ERROR(${err.code}): ${err.message}`)
+          return reject(error)
+        }
+      )
+    })
   }
 
   return { currentLatitude, currentLongitude, getCurrentPosition }
