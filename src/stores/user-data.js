@@ -21,5 +21,13 @@ export const useUserDataStore = defineStore('user-data', () => {
     })
   }
 
-  return { currentLatitude, currentLongitude, getCurrentPosition }
+  function getSheetName(hour) {
+    let res = hour - ((hour + 1) % 3);
+    if (res < 0) {
+      res += 24;
+    }
+    return res;
+  }
+
+  return { currentLatitude, currentLongitude, getCurrentPosition, getSheetName }
 })

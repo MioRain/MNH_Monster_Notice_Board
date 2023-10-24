@@ -3,15 +3,18 @@ import { reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
+import { useStateStore } from "@/stores/state";
 import axios from "axios";
 
 const userDataStore = useUserDataStore();
+const stateStore = useStateStore();
 const { getCurrentPosition, getSheetName } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
-
+const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo } = useEyewitnessInfoStore();
 
 const handleSubmit = async () => {
+  loadingStyle.value = true;
   await getCurrentPosition();
 
   const today = new Date();
@@ -45,7 +48,8 @@ const handleSubmit = async () => {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  
+
+  loadingStyle.value = false;
   alert(res.data);
 };
 </script>
@@ -76,12 +80,6 @@ const handleSubmit = async () => {
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="exampleModalLabel">發布目擊情報</h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
         </div>
         <div class="modal-body">
           <div class="input-group mb-3">
@@ -179,13 +177,14 @@ const handleSubmit = async () => {
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">
             取消
           </button>
           <button
             type="button"
             class="btn btn-primary announce-submit"
             @click="handleSubmit"
+            data-bs-dismiss="modal"
           >
             送出
           </button>
@@ -226,3 +225,5 @@ const handleSubmit = async () => {
   }
 }
 </style>
+
+<style></style>
