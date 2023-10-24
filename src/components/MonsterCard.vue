@@ -7,7 +7,7 @@ const { monsterList } = useEyewitnessInfoStore();
 <template>
   <div class="container">
     <a v-if="monsterList.value" v-for="info in monsterList.value" :href="info[8]" target="_blank" class="monster-card">
-      <img class="monster-img" src="../..//public/images/g-jagr.png" alt="g-jagr's image">
+      <img class="monster-img" :src="'../..//public/images/' + info[3] + '.png'" :alt="info[3] + '的圖片'">
       <div class="info">
         編號：{{info[0]}} ｜ 周目：{{info[4]}} ｜ 星數：{{info[5]}}
         <br>
@@ -18,7 +18,7 @@ const { monsterList } = useEyewitnessInfoStore();
     <div v-else class="monster-card">
       <div class="info">暫無魔物目擊情報</div>
     </div>
-    
+
   </div>
 
 </template>
