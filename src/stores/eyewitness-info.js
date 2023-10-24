@@ -13,5 +13,7 @@ export const useEyewitnessInfoStore = defineStore('eyewitness-info', () => {
     mapLink: "",
   });
 
-  return { eyewitnessInfo }
+  const monsterList = reactive([])
+
+  return { eyewitnessInfo, monsterList }
 })

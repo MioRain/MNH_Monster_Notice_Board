@@ -11,7 +11,7 @@ const stateStore = useStateStore();
 const { getCurrentPosition, getSheetName } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
-const { eyewitnessInfo } = useEyewitnessInfoStore();
+const { eyewitnessInfo, monsterList } = useEyewitnessInfoStore();
 
 const handleSubmit = async () => {
   loadingStyle.value = true;
@@ -52,6 +52,27 @@ const handleSubmit = async () => {
   loadingStyle.value = false;
   alert(res.data);
 };
+
+const fetchMonsterList = async () => {
+  const today = new Date();
+  const todayData = {
+    year: String(today.getFullYear()),
+    month: String(today.getMonth() + 1).padStart(2, "0"),
+    date: String(today.getDate()).padStart(2, "0"),
+    hour: String(today.getHours()).padStart(2, "0"),
+    minute: String(today.getMinutes()).padStart(2, "0"),
+  };
+  const sheetName = getSheetName(todayData.hour);
+  const url =
+    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
+
+  loadingStyle.value = true;
+
+  const res = await axios.get(url + `?time=${sheetName}`);
+  monsterList.value = res.data
+
+  loadingStyle.value = false;
+};
 </script>
 
 <template>
@@ -66,7 +87,7 @@ const handleSubmit = async () => {
     </button>
     <button class="city">城市</button>
     <button class="monster">魔物</button>
-    <button class="search" @click="getCurrentPosition">搜尋</button>
+    <button class="search" @click="fetchMonsterList">搜尋</button>
   </div>
 
   <div
@@ -198,7 +219,9 @@ const handleSubmit = async () => {
 .container {
   width: 100%;
   height: 100px;
+  background-color: #FCF4E9;
   border-top: 5px solid #c0b08e;
+  border-radius: 0 0 30px 30px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -225,5 +248,3 @@ const handleSubmit = async () => {
   }
 }
 </style>
-
-<style></style>
