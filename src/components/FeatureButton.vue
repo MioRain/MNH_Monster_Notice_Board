@@ -11,7 +11,7 @@ const stateStore = useStateStore();
 const { getCurrentPosition, getSheetName } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
-const { eyewitnessInfo, monsterList } = useEyewitnessInfoStore();
+const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
 const handleSubmit = async () => {
   loadingStyle.value = true;
@@ -69,7 +69,22 @@ const fetchMonsterList = async () => {
   loadingStyle.value = true;
 
   const res = await axios.get(url + `?time=${sheetName}`);
-  monsterList.value = res.data
+  await getCurrentPosition();
+
+  const tempRes = res.data.map((data) => {
+    let distance = getDistance(
+      currentLatitude.value,
+      currentLongitude.value,
+      data[6],
+      data[7],
+      "K"
+    );
+    distance = Number.parseFloat(distance).toFixed(3);
+    data.push(distance);
+    return data;
+  });
+
+  monsterList.value = tempRes;
 
   loadingStyle.value = false;
 };
@@ -219,7 +234,7 @@ const fetchMonsterList = async () => {
 .container {
   width: 100%;
   height: 100px;
-  background-color: #FCF4E9;
+  background-color: #fcf4e9;
   border-top: 5px solid #c0b08e;
   border-radius: 0 0 30px 30px;
   display: flex;
