@@ -1,5 +1,4 @@
 <script setup>
-import { reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
@@ -8,23 +7,19 @@ import axios from "axios";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
-const { getCurrentPosition, getSheetName } = useUserDataStore();
+const { getCurrentPosition, getSheetName, getTodayData } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
+
+const googleScriptUrl =
+    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
 
 const handleSubmit = async () => {
   loadingStyle.value = true;
   await getCurrentPosition();
 
-  const today = new Date();
-  const todayData = {
-    year: String(today.getFullYear()),
-    month: String(today.getMonth() + 1).padStart(2, "0"),
-    date: String(today.getDate()).padStart(2, "0"),
-    hour: String(today.getHours()).padStart(2, "0"),
-    minute: String(today.getMinutes()).padStart(2, "0"),
-  };
+  const todayData = getTodayData()
   const time = `${todayData.year}/${todayData.month}/${todayData.date} ${todayData.hour}:${todayData.minute}`;
   const sheetName = getSheetName(todayData.hour);
 
@@ -40,10 +35,7 @@ const handleSubmit = async () => {
     mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
   };
 
-  const url =
-    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
-
-  const res = await axios.post(url, payload, {
+  const res = await axios.post(googleScriptUrl, payload, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -54,21 +46,12 @@ const handleSubmit = async () => {
 };
 
 const fetchMonsterList = async () => {
-  const today = new Date();
-  const todayData = {
-    year: String(today.getFullYear()),
-    month: String(today.getMonth() + 1).padStart(2, "0"),
-    date: String(today.getDate()).padStart(2, "0"),
-    hour: String(today.getHours()).padStart(2, "0"),
-    minute: String(today.getMinutes()).padStart(2, "0"),
-  };
+  const todayData = getTodayData()
   const sheetName = getSheetName(todayData.hour);
-  const url =
-    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
-
+  
   loadingStyle.value = true;
 
-  const res = await axios.get(url + `?time=${sheetName}`);
+  const res = await axios.get(googleScriptUrl + `?time=${sheetName}`);
   await getCurrentPosition();
 
   const tempRes = res.data.map((data) => {
