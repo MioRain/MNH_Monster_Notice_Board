@@ -224,6 +224,13 @@ const fetchMonsterList = async () => {
   justify-content: space-evenly;
   align-items: center;
 
+  .city, .monster {
+      pointer-events: none;
+      background-color: #c0b08e;
+      color: white;
+      opacity: 0.3;
+    }
+
   & button {
     width: 65px;
     height: 65px;
@@ -243,6 +250,8 @@ const fetchMonsterList = async () => {
       border: 1px solid #83765b;
       opacity: 1;
     }
+
+
   }
 }
 </style>
