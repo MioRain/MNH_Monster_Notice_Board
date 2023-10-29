@@ -6,7 +6,7 @@ const { monsterList } = useEyewitnessInfoStore();
 
 <template>
   <div class="container">
-    <div v-if="monsterList.value" v-for="info in monsterList.value" class="monster-card">
+    <div v-if="monsterList.value?.length > 0" v-for="info in monsterList.value" class="monster-card">
       <img
         class="monster-img"
         :src="'../..//public/images/' + info[3] + '.png'"
@@ -83,7 +83,7 @@ const { monsterList } = useEyewitnessInfoStore();
         .coordinate,
         .hunted {
           margin: 0 10px;
-          padding: 2% 5%;
+          padding: 2% 4.5%;
           display: flex;
           justify-content: center;
           align-items: center;

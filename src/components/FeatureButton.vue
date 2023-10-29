@@ -67,6 +67,7 @@ const fetchMonsterList = async () => {
     return data;
   });
 
+  tempRes.sort((a, b) => a[a.length - 1] - b[b.length - 1]) 
   monsterList.value = tempRes;
 
   loadingStyle.value = false;
