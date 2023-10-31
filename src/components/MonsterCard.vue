@@ -40,7 +40,7 @@ onMounted(() => {
     >
       <img
         class="monster-img"
-        :src="'../..//public/images/' + info[3] + '.png'"
+        :src="'/images/' + info[3] + '.png'"
         :alt="info[3] + '的圖片'"
       />
 
