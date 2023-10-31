@@ -1,12 +1,43 @@
 <script setup>
+import { onMounted } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
+import { useUserDataStore } from "@/stores/user-data";
 
 const { monsterList } = useEyewitnessInfoStore();
+const { huntedList, getStartHour, getTodayData } = useUserDataStore();
+
+const hunted = (num, index) => {
+  const todayData = getTodayData();
+  const startHour = getStartHour(todayData.hour).toString();
+  
+  if (huntedList.startHour === startHour) {
+    huntedList.huntedNum.push(num);
+  } else {
+    huntedList.startHour = startHour;
+    huntedList.huntedNum = [num];
+  }
+  
+  localStorage.setItem("hunted", JSON.stringify(huntedList));
+  monsterList.value.splice(index, 1);
+};
+
+onMounted(() => {
+  const huntedListStore = JSON.parse(localStorage.getItem("hunted"));
+  if (huntedListStore) {
+    const { startHour, huntedNum } = huntedListStore;
+    huntedList.startHour = startHour;
+    huntedList.huntedNum = huntedNum;
+  }
+});
 </script>
 
 <template>
   <div class="container">
-    <div v-if="monsterList.value?.length > 0" v-for="info in monsterList.value" class="monster-card">
+    <div
+      v-if="monsterList.value?.length > 0"
+      v-for="(info, index) in monsterList.value"
+      class="monster-card"
+    >
       <img
         class="monster-img"
         :src="'../..//public/images/' + info[3] + '.png'"
@@ -27,7 +58,7 @@ const { monsterList } = useEyewitnessInfoStore();
           <div class="coordinate">
             <a :href="info[8]" target="_blank">鎖定座標</a>
           </div>
-          <button class="hunted">討伐完成</button>
+          <button class="hunted" @click="hunted(info[0], index)">討伐完成</button>
         </div>
       </div>
     </div>

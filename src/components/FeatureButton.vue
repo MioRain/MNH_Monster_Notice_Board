@@ -7,21 +7,21 @@ import axios from "axios";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
-const { getCurrentPosition, getSheetName, getTodayData } = useUserDataStore();
+const { huntedList, getCurrentPosition, getStartHour, getTodayData } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
 const googleScriptUrl =
-    "https://script.google.com/macros/s/AKfycbyxbb898unGj27htJWaoloG7cTJL8ms15q52AKkCCZ5WIkm9_oZ292SFNqACUP7WrvgMQ/exec";
+  "https://script.google.com/macros/s/AKfycbx8Qh2FGvPztdvkT75KME-iLXIOl11OOsdddG_O_sfydoj1ODhKECTQv_ovBShjE3nJ/exec";
 
 const handleSubmit = async () => {
   loadingStyle.value = true;
   await getCurrentPosition();
 
-  const todayData = getTodayData()
+  const todayData = getTodayData();
   const time = `${todayData.year}/${todayData.month}/${todayData.date} ${todayData.hour}:${todayData.minute}`;
-  const sheetName = getSheetName(todayData.hour);
+  const sheetName = getStartHour(todayData.hour);
 
   const payload = {
     sheetName,
@@ -46,31 +46,46 @@ const handleSubmit = async () => {
 };
 
 const fetchMonsterList = async () => {
-  const todayData = getTodayData()
-  const sheetName = getSheetName(todayData.hour);
-  
-  loadingStyle.value = true;
+  try {
+    const todayData = getTodayData();
+    const sheetName = getStartHour(todayData.hour);
 
-  const res = await axios.get(googleScriptUrl + `?time=${sheetName}`);
-  await getCurrentPosition();
+    loadingStyle.value = true;
 
-  const tempRes = res.data.map((data) => {
-    let distance = getDistance(
-      currentLatitude.value,
-      currentLongitude.value,
-      data[6],
-      data[7],
-      "K"
-    );
-    distance = Number.parseFloat(distance).toFixed(3);
-    data.push(distance);
-    return data;
-  });
+    const res = await axios.get(googleScriptUrl + `?time=${sheetName}`);
+    await getCurrentPosition();
 
-  tempRes.sort((a, b) => a[a.length - 1] - b[b.length - 1]) 
-  monsterList.value = tempRes;
+    if (
+      parseInt(huntedList?.startHour) === parseInt(sheetName) &&
+      huntedList?.huntedNum.length > 0
+    ) {
+      res.data = res.data.filter((data) => !huntedList.huntedNum.includes(data[0]));
+    }
 
-  loadingStyle.value = false;
+    const tempRes = res.data.map((data) => {
+      let distance = getDistance(
+        currentLatitude.value,
+        currentLongitude.value,
+        data[6],
+        data[7],
+        "K"
+      );
+      distance = Number.parseFloat(distance).toFixed(3);
+      data.push(distance);
+      return data;
+    });
+
+    tempRes.sort((a, b) => a[a.length - 1] - b[b.length - 1]);
+    monsterList.value = tempRes;
+
+    loadingStyle.value = false;
+    console.log(monsterList.value);
+  } catch (error) {
+    console.error(error);
+    monsterList.value = [];
+    alert("暫無魔物目擊情報");
+    loadingStyle.value = false;
+  }
 };
 </script>
 
@@ -225,12 +240,13 @@ const fetchMonsterList = async () => {
   justify-content: space-evenly;
   align-items: center;
 
-  .city, .monster {
-      pointer-events: none;
-      background-color: #c0b08e;
-      color: white;
-      opacity: 0.3;
-    }
+  .city,
+  .monster {
+    pointer-events: none;
+    background-color: #c0b08e;
+    color: white;
+    opacity: 0.3;
+  }
 
   & button {
     width: 65px;
@@ -251,8 +267,6 @@ const fetchMonsterList = async () => {
       border: 1px solid #83765b;
       opacity: 1;
     }
-
-
   }
 }
 </style>
