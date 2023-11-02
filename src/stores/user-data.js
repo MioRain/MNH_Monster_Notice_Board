@@ -33,17 +33,5 @@ export const useUserDataStore = defineStore('user-data', () => {
     return res;
   }
 
-  function getTodayData() {
-    const today = new Date();
-    const todayData = {
-      year: String(today.getFullYear()),
-      month: String(today.getMonth() + 1).padStart(2, "0"),
-      date: String(today.getDate()).padStart(2, "0"),
-      hour: String(today.getHours()).padStart(2, "0"),
-      minute: String(today.getMinutes()).padStart(2, "0"),
-    };
-    return todayData;
-  }
-
-  return { currentLatitude, currentLongitude, huntedList, getCurrentPosition, getStartHour, getTodayData }
+  return { currentLatitude, currentLongitude, huntedList, getCurrentPosition, getStartHour }
 })

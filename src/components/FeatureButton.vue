@@ -7,7 +7,7 @@ import axios from "axios";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
-const { huntedList, getCurrentPosition, getStartHour, getTodayData } = useUserDataStore();
+const { huntedList, getCurrentPosition, getStartHour } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
@@ -19,9 +19,9 @@ const handleSubmit = async () => {
   loadingStyle.value = true;
   await getCurrentPosition();
 
-  const todayData = getTodayData();
-  const time = `${todayData.year}/${todayData.month}/${todayData.date} ${todayData.hour}:${todayData.minute}`;
-  const sheetName = getStartHour(todayData.hour);
+  const now = moment();
+  const time = now.format();
+  const sheetName = getStartHour(now.hour());
 
   const payload = {
     sheetName,
@@ -47,8 +47,8 @@ const handleSubmit = async () => {
 
 const fetchMonsterList = async () => {
   try {
-    const todayData = getTodayData();
-    const sheetName = getStartHour(todayData.hour);
+    const now = moment();
+    const sheetName = getStartHour(now.hour());
 
     loadingStyle.value = true;
 

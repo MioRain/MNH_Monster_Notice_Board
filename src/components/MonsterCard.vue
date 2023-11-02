@@ -4,11 +4,11 @@ import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 
 const { monsterList } = useEyewitnessInfoStore();
-const { huntedList, getStartHour, getTodayData } = useUserDataStore();
+const { huntedList, getStartHour } = useUserDataStore();
 
 const hunted = (num, index) => {
-  const todayData = getTodayData();
-  const startHour = getStartHour(todayData.hour).toString();
+  const now = moment();
+  const startHour = getStartHour(now.hour()).toString();
   
   if (huntedList.startHour === startHour) {
     huntedList.huntedNum.push(num);
