@@ -3,11 +3,12 @@ import { defineStore } from "pinia"
 
 export const useEyewitnessInfoStore = defineStore('eyewitness-info', () => {
   const eyewitnessInfo = reactive({
-    time: 0,
-    cityName: "",
-    monsterName: "",
-    round: 0,
-    rare: 0,
+    time: '',
+    expiredTime: '',
+    isPark: false,
+    monsterName: "大凶豺龍",
+    round: 1,
+    rare: 5,
     latitude: 0,
     longitude: 0,
     mapLink: "",

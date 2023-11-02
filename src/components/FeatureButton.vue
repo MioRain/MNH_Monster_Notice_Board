@@ -26,7 +26,8 @@ const handleSubmit = async () => {
   const payload = {
     sheetName,
     time,
-    cityName: eyewitnessInfo.cityName,
+    expiredTime: '',
+    isPark: eyewitnessInfo.isPark,
     monsterName: eyewitnessInfo.monsterName,
     round: eyewitnessInfo.round,
     rare: eyewitnessInfo.rare,
@@ -34,7 +35,7 @@ const handleSubmit = async () => {
     longitude: currentLongitude.value,
     mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
   };
-
+  
   const res = await axios.post(googleScriptUrl, payload, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -91,6 +92,8 @@ const fetchMonsterList = async () => {
 
 <template>
   <div class="container">
+    <button class="map">地圖</button>
+    <button class="monster">魔物</button>
     <button
       type="button"
       data-bs-toggle="modal"
@@ -99,8 +102,6 @@ const fetchMonsterList = async () => {
     >
       發布
     </button>
-    <button class="city">城市</button>
-    <button class="monster">魔物</button>
     <button class="search" @click="fetchMonsterList">搜尋</button>
   </div>
 
@@ -117,39 +118,16 @@ const fetchMonsterList = async () => {
           <h1 class="modal-title fs-5" id="exampleModalLabel">發布目擊情報</h1>
         </div>
         <div class="modal-body">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">目擊縣市</span>
-            <select
-              class="form-control"
-              id="city"
-              name="city"
-              v-model="eyewitnessInfo.cityName"
-            >
-              <option value="" disabled selected>選擇縣市</option>
-              <option>台北市</option>
-              <option>新北市</option>
-              <option>桃園市</option>
-              <option>宜蘭縣</option>
-              <option>基隆市</option>
-              <option>新竹市</option>
-              <option>新竹縣</option>
-              <option>台中市</option>
-              <option>苗栗縣</option>
-              <option>彰化縣</option>
-              <option>南投縣</option>
-              <option>雲林縣</option>
-              <option>嘉義市</option>
-              <option>嘉義縣</option>
-              <option>台南市</option>
-              <option>高雄市</option>
-              <option>屏東縣</option>
-              <option>花蓮縣</option>
-              <option>台東縣</option>
-              <option>金門縣</option>
-              <option>連江縣</option>
-              <option>澎湖縣</option>
-              <option>其他</option>
-            </select>
+          <div class="form-check">
+            <label class="form-check-label park-area" for="flexCheckDefault">
+              是否為公園地區？
+            </label>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="flexCheckDefault"
+              v-model="eyewitnessInfo.isPark"
+            />
           </div>
 
           <div class="input-group mb-3">
@@ -160,7 +138,6 @@ const fetchMonsterList = async () => {
               name="monster"
               v-model="eyewitnessInfo.monsterName"
             >
-              <option value="" disabled selected>選擇魔物</option>
               <option>大凶豺龍</option>
               <option>搔鳥</option>
               <option>毒妖鳥</option>
@@ -174,7 +151,7 @@ const fetchMonsterList = async () => {
               <option>角龍</option>
               <option>黑角龍</option>
               <option>火龍</option>
-              <option>蒼火龍</option>
+              <!-- <option>蒼火龍</option> -->
               <option>雌火龍</option>
               <option>櫻火龍</option>
             </select>
@@ -240,7 +217,7 @@ const fetchMonsterList = async () => {
   justify-content: space-evenly;
   align-items: center;
 
-  .city,
+  .map,
   .monster {
     pointer-events: none;
     background-color: #c0b08e;
@@ -267,6 +244,17 @@ const fetchMonsterList = async () => {
       border: 1px solid #83765b;
       opacity: 1;
     }
+  }
+}
+.form-check {
+  .form-check-input {
+    width: 21px;
+    height: 21px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+  }
+  .park-area {
+    font-size: 1.2rem;
   }
 }
 </style>
