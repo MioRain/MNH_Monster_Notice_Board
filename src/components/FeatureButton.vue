@@ -7,26 +7,29 @@ import axios from "axios";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
-const { huntedList, getCurrentPosition, getStartHour } = useUserDataStore();
+const { huntedList, getCurrentPosition, getSheetNameAndExpiredTime } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbx8Qh2FGvPztdvkT75KME-iLXIOl11OOsdddG_O_sfydoj1ODhKECTQv_ovBShjE3nJ/exec";
+  "https://script.google.com/macros/s/AKfycbzTwwvUD39zBySYc8keJmz3LDKxZaK_stwp2sp8e8XcFWT6Ieeem3KGG-cSyYUSCZNfEQ/exec";
 
 const handleSubmit = async () => {
+  if (eyewitnessInfo.round > 5 || eyewitnessInfo.round < 1 || eyewitnessInfo.rare > 10 || eyewitnessInfo.rare < 1) {
+    alert("周目(1~5)或星數(1~10)超過範圍");
+    return;
+  }
+  const { sheetName, expiredTime } = getSheetNameAndExpiredTime(eyewitnessInfo.isPark);
+  const now = moment();
+
   loadingStyle.value = true;
   await getCurrentPosition();
 
-  const now = moment();
-  const time = now.format();
-  const sheetName = getStartHour(now.hour());
-
   const payload = {
     sheetName,
-    time,
-    expiredTime: '',
+    time: now.format(),
+    expiredTime,
     isPark: eyewitnessInfo.isPark,
     monsterName: eyewitnessInfo.monsterName,
     round: eyewitnessInfo.round,
@@ -35,7 +38,7 @@ const handleSubmit = async () => {
     longitude: currentLongitude.value,
     mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
   };
-  
+
   const res = await axios.post(googleScriptUrl, payload, {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -158,7 +161,7 @@ const fetchMonsterList = async () => {
           </div>
 
           <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">周目</span>
+            <span class="input-group-text" id="inputGroup-sizing-default">周目(1~5)</span>
             <input
               type="number"
               class="form-control"
@@ -166,14 +169,14 @@ const fetchMonsterList = async () => {
               id="round"
               name="round"
               min="1"
-              max="999"
+              max="5"
               inputmode="numeric"
               v-model="eyewitnessInfo.round"
             />
           </div>
 
           <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">星數</span>
+            <span class="input-group-text" id="inputGroup-sizing-default">星數(1~10)</span>
             <input
               type="number"
               class="form-control"
@@ -256,5 +259,9 @@ const fetchMonsterList = async () => {
   .park-area {
     font-size: 1.2rem;
   }
+}
+
+span {
+  width: 110px;
 }
 </style>
