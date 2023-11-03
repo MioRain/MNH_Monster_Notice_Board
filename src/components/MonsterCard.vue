@@ -36,29 +36,28 @@ onMounted(() => {
     <div
       v-if="monsterList.value?.length > 0"
       v-for="(info, index) in monsterList.value"
-      class="monster-card"
-    >
+      class="monster-card">
       <img
         class="monster-img"
-        :src="'/images/' + info[3] + '.png'"
+        :src="'/images/' + info.monsterName + '.png'"
         :alt="info[3] + '的圖片'"
       />
 
       <div class="info">
-        <div>編號：{{ info[0] }} ｜ 周目：{{ info[4] }} ｜ 星數：{{ info[5] }}</div>
+        <div>編號：{{ info.serialNum }} ｜ 周目：{{ info.round }} ｜ 星數：{{ info.rare }}</div>
         <div>
-          距離 <span style="color: #a95620">{{ info[3] }}</span> 約
+          距離 <span style="color: #a95620">{{ info.monsterName }}</span> 約
           {{
-            Math.floor(info[9]) > 0
-              ? info[9] + " 公里"
-              : parseInt(info[9].toString().slice(-3)) + " 公尺"
+            Math.floor(info.distance) > 0
+              ? info.distance + " 公里"
+              : parseInt(info.distance.toString().slice(-3)) + " 公尺"
           }}
         </div>
         <div class="action">
           <div class="coordinate">
             <a :href="info[8]" target="_blank">鎖定座標</a>
           </div>
-          <button class="hunted" @click="hunted(info[0], index)">討伐完成</button>
+          <button class="hunted" @click="hunted(info.serialNum, index)">討伐完成</button>
         </div>
       </div>
     </div>
@@ -80,7 +79,7 @@ onMounted(() => {
   overflow: scroll;
 
   .monster-card {
-    width: 80%;
+    width: 85%;
     margin-top: 20px;
     padding: 3%;
     border-radius: 20px;
@@ -113,7 +112,7 @@ onMounted(() => {
 
         .coordinate,
         .hunted {
-          margin: 0 10px;
+          margin: 5px 10px;
           padding: 2% 4.5%;
           display: flex;
           justify-content: center;

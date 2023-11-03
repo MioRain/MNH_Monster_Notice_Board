@@ -13,10 +13,15 @@ const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbzTwwvUD39zBySYc8keJmz3LDKxZaK_stwp2sp8e8XcFWT6Ieeem3KGG-cSyYUSCZNfEQ/exec";
+  "https://script.google.com/macros/s/AKfycbxdvhrjecBvh7pgIUMO_139MU1Y21Z3i5Hm8ow78sWsrD8FPjy_c7mnU-PK7D-yL0y_ZQ/exec";
 
 const handleSubmit = async () => {
-  if (eyewitnessInfo.round > 5 || eyewitnessInfo.round < 1 || eyewitnessInfo.rare > 10 || eyewitnessInfo.rare < 1) {
+  if (
+    eyewitnessInfo.round > 5 ||
+    eyewitnessInfo.round < 1 ||
+    eyewitnessInfo.rare > 10 ||
+    eyewitnessInfo.rare < 1
+  ) {
     alert("周目(1~5)或星數(1~10)超過範圍");
     return;
   }
@@ -44,46 +49,55 @@ const handleSubmit = async () => {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-
   loadingStyle.value = false;
   alert(res.data);
 };
 
 const fetchMonsterList = async () => {
   try {
-    const now = moment();
-    const sheetName = getStartHour(now.hour());
+    const now = encodeURIComponent(moment().format());
+    const { sheetName } = getSheetNameAndExpiredTime(eyewitnessInfo.isPark);
 
     loadingStyle.value = true;
 
-    const res = await axios.get(googleScriptUrl + `?time=${sheetName}`);
+    const res = await axios.get(googleScriptUrl + `?sheetName=${sheetName}&now=${now}`);
     await getCurrentPosition();
 
-    if (
-      parseInt(huntedList?.startHour) === parseInt(sheetName) &&
-      huntedList?.huntedNum.length > 0
-    ) {
+    if (huntedList?.huntedNum.length > 0) {
       res.data = res.data.filter((data) => !huntedList.huntedNum.includes(data[0]));
     }
-
+    
     const tempRes = res.data.map((data) => {
       let distance = getDistance(
         currentLatitude.value,
         currentLongitude.value,
-        data[6],
         data[7],
+        data[8],
         "K"
       );
-      distance = Number.parseFloat(distance).toFixed(3);
-      data.push(distance);
-      return data;
+
+      const monsterInfo = {
+        serialNum: data[0],
+        submitedTime: data[1],
+        expiredTime: data[2],
+        isPark: data[3],
+        monsterName: data[4],
+        round: data[5],
+        rare: data[6],
+        lat: data[7],
+        lng: data[8],
+        mapUrl: data[9],
+        expiredTime: data[10],
+        distance: Number.parseFloat(distance).toFixed(3)
+      };
+
+      return monsterInfo;
     });
 
-    tempRes.sort((a, b) => a[a.length - 1] - b[b.length - 1]);
+    tempRes.sort((a, b) => a.distance - b.distance);
     monsterList.value = tempRes;
 
     loadingStyle.value = false;
-    console.log(monsterList.value);
   } catch (error) {
     console.error(error);
     monsterList.value = [];
@@ -176,7 +190,9 @@ const fetchMonsterList = async () => {
           </div>
 
           <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">星數(1~10)</span>
+            <span class="input-group-text" id="inputGroup-sizing-default"
+              >星數(1~10)</span
+            >
             <input
               type="number"
               class="form-control"
