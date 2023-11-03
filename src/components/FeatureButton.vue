@@ -24,33 +24,44 @@ const handleSubmit = async () => {
   ) {
     alert("周目(1~5)或星數(1~10)超過範圍");
     return;
+  } else if (
+    confirm(`
+  請確認以下情報是否正確？
+  目擊地區為： ${eyewitnessInfo.isPark ? "公園地區" : "一般地區"}
+  目擊魔物為： ${eyewitnessInfo.monsterName}
+  周目為： ${eyewitnessInfo.round}
+  星數為： ${eyewitnessInfo.rare}
+  `)
+  ) {
+    const { sheetName, expiredTime } = getSheetNameAndExpiredTime(eyewitnessInfo.isPark);
+    const now = moment();
+
+    loadingStyle.value = true;
+    await getCurrentPosition();
+
+    const payload = {
+      sheetName,
+      time: now.format(),
+      expiredTime,
+      isPark: eyewitnessInfo.isPark,
+      monsterName: eyewitnessInfo.monsterName,
+      round: eyewitnessInfo.round,
+      rare: eyewitnessInfo.rare,
+      latitude: currentLatitude.value,
+      longitude: currentLongitude.value,
+      mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
+    };
+
+    const res = await axios.post(googleScriptUrl, payload, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    loadingStyle.value = false;
+    alert(res.data);
+  } else {
+    return;
   }
-  const { sheetName, expiredTime } = getSheetNameAndExpiredTime(eyewitnessInfo.isPark);
-  const now = moment();
-
-  loadingStyle.value = true;
-  await getCurrentPosition();
-
-  const payload = {
-    sheetName,
-    time: now.format(),
-    expiredTime,
-    isPark: eyewitnessInfo.isPark,
-    monsterName: eyewitnessInfo.monsterName,
-    round: eyewitnessInfo.round,
-    rare: eyewitnessInfo.rare,
-    latitude: currentLatitude.value,
-    longitude: currentLongitude.value,
-    mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
-  };
-
-  const res = await axios.post(googleScriptUrl, payload, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
-  loadingStyle.value = false;
-  alert(res.data);
 };
 
 const fetchMonsterList = async () => {
@@ -66,7 +77,7 @@ const fetchMonsterList = async () => {
     if (huntedList?.huntedNum?.length > 0) {
       res.data = res.data.filter((data) => !huntedList.huntedNum.includes(data[0]));
     }
-    
+
     const tempRes = res.data.map((data) => {
       let distance = getDistance(
         currentLatitude.value,
@@ -88,7 +99,7 @@ const fetchMonsterList = async () => {
         lng: data[8],
         mapUrl: data[9],
         expiredTime: data[10],
-        distance: Number.parseFloat(distance).toFixed(3)
+        distance: Number.parseFloat(distance).toFixed(3),
       };
 
       return monsterInfo;
