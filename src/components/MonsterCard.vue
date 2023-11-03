@@ -96,11 +96,12 @@ onMounted(() => {
 
     .park-img {
       width: 30px;
+      height: 40px;
       border: 1px solid white;
       border-radius: 10px;
       background-color: #e2f0d6;
       position: absolute;
-      top: -15px;
+      top: -10px;
       left: -15px;
     }
     .monster-img {
@@ -144,6 +145,12 @@ onMounted(() => {
     }
 
     @media (min-width: 435px) {
+      .park-img {
+      width: 40px;
+      height: 50px;
+      top: -10px;
+      left: -20px;
+    }
       .info {
         font-size: 1rem;
         & div {
@@ -153,6 +160,12 @@ onMounted(() => {
     }
 
     @media (min-width: 768px) {
+      .park-img {
+      width: 50px;
+      height: 60px;
+      top: -10px;
+      left: -25px;
+    }
       .info {
         font-size: 1.2rem;
         & div {
