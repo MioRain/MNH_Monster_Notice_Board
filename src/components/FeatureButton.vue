@@ -97,7 +97,7 @@ const fetchMonsterList = async () => {
         rare: data[6],
         lat: data[7],
         lng: data[8],
-        mapUrl: data[9],
+        mapLink: data[9],
         expiredTime: data[10],
         distance: Number.parseFloat(distance).toFixed(3),
       };

@@ -60,7 +60,7 @@ onMounted(() => {
         </div>
         <div class="action">
           <div class="coordinate">
-            <a :href="info[8]" target="_blank">鎖定座標</a>
+            <a :href="info.mapLink" target="_blank">鎖定座標</a>
           </div>
           <button class="hunted" @click="hunted(info.serialNum, index)">討伐完成</button>
         </div>
