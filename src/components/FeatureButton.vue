@@ -63,7 +63,7 @@ const fetchMonsterList = async () => {
     const res = await axios.get(googleScriptUrl + `?sheetName=${sheetName}&now=${now}`);
     await getCurrentPosition();
 
-    if (huntedList?.huntedNum.length > 0) {
+    if (huntedList?.huntedNum?.length > 0) {
       res.data = res.data.filter((data) => !huntedList.huntedNum.includes(data[0]));
     }
     

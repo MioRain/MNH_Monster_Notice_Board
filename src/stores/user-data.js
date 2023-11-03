@@ -5,7 +5,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   const currentLatitude = ref(0)
   const currentLongitude = ref(0)
   const huntedList = reactive({
-    startHour: '',
+    date: '',
     huntedNum: []
   })
 

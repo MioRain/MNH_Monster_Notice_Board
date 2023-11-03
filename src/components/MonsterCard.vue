@@ -4,28 +4,29 @@ import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 
 const { monsterList } = useEyewitnessInfoStore();
-const { huntedList, getStartHour } = useUserDataStore();
+const { huntedList } = useUserDataStore();
 
 const hunted = (num, index) => {
-  const now = moment();
-  const startHour = getStartHour(now.hour()).toString();
-  
-  if (huntedList.startHour === startHour) {
-    huntedList.huntedNum.push(num);
-  } else {
-    huntedList.startHour = startHour;
-    huntedList.huntedNum = [num];
+  if (confirm("是否確定討伐？")) {
+    const date = moment().format("YYYY/M/D");
+
+    if (huntedList.date === date) {
+      huntedList.huntedNum.push(num);
+    } else {
+      huntedList.date = date;
+      huntedList.huntedNum = [num];
+    }
+
+    localStorage.setItem("hunted", JSON.stringify(huntedList));
+    monsterList.value.splice(index, 1);
   }
-  
-  localStorage.setItem("hunted", JSON.stringify(huntedList));
-  monsterList.value.splice(index, 1);
 };
 
 onMounted(() => {
   const huntedListStore = JSON.parse(localStorage.getItem("hunted"));
   if (huntedListStore) {
-    const { startHour, huntedNum } = huntedListStore;
-    huntedList.startHour = startHour;
+    const { date, huntedNum } = huntedListStore;
+    huntedList.date = date;
     huntedList.huntedNum = huntedNum;
   }
 });
@@ -36,7 +37,8 @@ onMounted(() => {
     <div
       v-if="monsterList.value?.length > 0"
       v-for="(info, index) in monsterList.value"
-      class="monster-card">
+      class="monster-card"
+    >
       <img
         class="monster-img"
         :src="'/images/' + info.monsterName + '.png'"
@@ -44,7 +46,9 @@ onMounted(() => {
       />
 
       <div class="info">
-        <div>編號：{{ info.serialNum }} ｜ 周目：{{ info.round }} ｜ 星數：{{ info.rare }}</div>
+        <div>
+          編號：{{ info.serialNum }} ｜ 周目：{{ info.round }} ｜ 星數：{{ info.rare }}
+        </div>
         <div>
           距離 <span style="color: #a95620">{{ info.monsterName }}</span> 約
           {{
