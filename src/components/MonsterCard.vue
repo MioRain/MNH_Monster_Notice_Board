@@ -39,6 +39,7 @@ onMounted(() => {
       v-for="(info, index) in monsterList.value"
       class="monster-card"
     >
+      <img v-if="/true/i.test(info.isPark)" class="park-img" src="/images/tree.png" />
       <img
         class="monster-img"
         :src="'/images/' + info.monsterName + '.png'"
@@ -83,7 +84,7 @@ onMounted(() => {
   overflow: scroll;
 
   .monster-card {
-    width: 85%;
+    width: 88%;
     margin-top: 20px;
     padding: 3%;
     border-radius: 20px;
@@ -91,7 +92,17 @@ onMounted(() => {
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
+    position: relative;
 
+    .park-img {
+      width: 30px;
+      border: 1px solid white;
+      border-radius: 10px;
+      background-color: #e2f0d6;
+      position: absolute;
+      top: -15px;
+      left: -15px;
+    }
     .monster-img {
       width: 20%;
       max-width: 100px;

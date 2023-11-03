@@ -37,6 +37,7 @@ const { loadingStyle } = storeToRefs(stateStore);
   justify-content: center;
   align-items: center;
   user-select:none;
+  z-index: 100;
 }
 
 .loading-text {
