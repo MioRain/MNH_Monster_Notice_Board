@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
@@ -57,6 +58,9 @@ const handleSubmit = async () => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+
+    localStorage.setItem("submitedData", JSON.stringify(payload));
+
     loadingStyle.value = false;
     alert(res.data);
   } else {
@@ -116,6 +120,16 @@ const fetchMonsterList = async () => {
     loadingStyle.value = false;
   }
 };
+
+onMounted(() => {
+  const submitedData = JSON.parse(localStorage.getItem("submitedData"));
+  if (submitedData) {
+    const { monsterName, round, rare } = submitedData;
+    eyewitnessInfo.monsterName = monsterName
+    eyewitnessInfo.round = round
+    eyewitnessInfo.rare = rare
+  }
+});
 </script>
 
 <template>
