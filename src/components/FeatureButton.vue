@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
@@ -14,57 +14,67 @@ const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbxdvhrjecBvh7pgIUMO_139MU1Y21Z3i5Hm8ow78sWsrD8FPjy_c7mnU-PK7D-yL0y_ZQ/exec";
+  "https://script.google.com/macros/s/AKfycbzNz-T9LWaL7RZN5e2C06Tfsk27nSTqTqi7ndTJErFI5NOD5dqRtwKB5VxcsoeZmv8-0Q/exec";
 
 const handleSubmit = async () => {
-  if (
-    eyewitnessInfo.round > 5 ||
-    eyewitnessInfo.round < 1 ||
-    eyewitnessInfo.rare > 10 ||
-    eyewitnessInfo.rare < 1
-  ) {
-    alert("周目(1~5)或星數(1~10)超過範圍");
-    return;
-  } else if (
-    confirm(`
-  請確認以下情報是否正確？
-  目擊地區為： ${eyewitnessInfo.isPark ? "公園地區" : "一般地區"}
-  目擊魔物為： ${eyewitnessInfo.monsterName}
-  周目為： ${eyewitnessInfo.round}
-  星數為： ${eyewitnessInfo.rare}
-  `)
-  ) {
-    const { sheetName, expiredTime } = getSheetNameAndExpiredTime(eyewitnessInfo.isPark);
-    const now = moment();
+  try {
+    if (
+      eyewitnessInfo.round > 5 ||
+      eyewitnessInfo.round < 1 ||
+      eyewitnessInfo.rare > 10 ||
+      eyewitnessInfo.rare < 1
+    ) {
+      alert("周目(1~5)或星數(1~10)超過範圍");
+      return;
+    } else if (
+      confirm(`
+        請確認以下情報是否正確？
+        目擊地區為： ${eyewitnessInfo.isPark ? "公園地區" : "一般地區"}
+        目擊魔物為： ${eyewitnessInfo.monsterName}
+        周目為： ${eyewitnessInfo.round}
+        星數為： ${eyewitnessInfo.rare}
+        `)
+    ) {
+      const { sheetName, expiredTime } = getSheetNameAndExpiredTime(
+        eyewitnessInfo.isPark
+      );
+      const now = moment();
 
-    loadingStyle.value = true;
-    await getCurrentPosition();
+      loadingStyle.value = true;
+      await getCurrentPosition();
 
-    const payload = {
-      sheetName,
-      time: now.format(),
-      expiredTime,
-      isPark: eyewitnessInfo.isPark,
-      monsterName: eyewitnessInfo.monsterName,
-      round: eyewitnessInfo.round,
-      rare: eyewitnessInfo.rare,
-      latitude: currentLatitude.value,
-      longitude: currentLongitude.value,
-      mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
-    };
+      const payload = {
+        sheetName,
+        time: now.format(),
+        expiredTime,
+        isPark: eyewitnessInfo.isPark,
+        monsterName: eyewitnessInfo.monsterName,
+        round: eyewitnessInfo.round,
+        rare: eyewitnessInfo.rare,
+        latitude: currentLatitude.value,
+        longitude: currentLongitude.value,
+        mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
+      };
 
-    const res = await axios.post(googleScriptUrl, payload, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
+      const res = await axios.post(googleScriptUrl, payload, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
 
-    localStorage.setItem("submitedData", JSON.stringify(payload));
-
+      localStorage.setItem("submitedData", JSON.stringify(payload));
+      loadingStyle.value = false;
+      alert(res.data);
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    alert(`
+    發布失敗，請向開發者回報以下錯誤訊息
+    ${error}
+    `);
     loadingStyle.value = false;
-    alert(res.data);
-  } else {
-    return;
   }
 };
 
@@ -121,13 +131,13 @@ const fetchMonsterList = async () => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   const submitedData = JSON.parse(localStorage.getItem("submitedData"));
   if (submitedData) {
     const { monsterName, round, rare } = submitedData;
-    eyewitnessInfo.monsterName = monsterName
-    eyewitnessInfo.round = round
-    eyewitnessInfo.rare = rare
+    eyewitnessInfo.monsterName = monsterName;
+    eyewitnessInfo.round = round;
+    eyewitnessInfo.rare = rare;
   }
 });
 </script>
