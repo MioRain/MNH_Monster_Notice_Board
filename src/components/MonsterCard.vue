@@ -22,6 +22,10 @@ const hunted = (num, index) => {
   }
 };
 
+const remove = async (num) => {
+  console.log('remove')
+}
+
 onMounted(() => {
   const huntedListStore = JSON.parse(localStorage.getItem("hunted"));
   if (huntedListStore) {
@@ -39,6 +43,7 @@ onMounted(() => {
       v-for="(info, index) in monsterList.value"
       class="monster-card"
     >
+      <button class="remove" @click="remove">Ｘ</button>
       <img v-if="/true/i.test(info.isPark)" class="park-img" src="/images/tree.png" />
       <img
         class="monster-img"
@@ -86,13 +91,23 @@ onMounted(() => {
   .monster-card {
     width: 88%;
     margin-top: 20px;
-    padding: 3%;
+    padding: 5% 3%;
     border-radius: 20px;
     background-color: #e2f0d6;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     position: relative;
+
+    .remove {
+      width: 35px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      border-radius: 3px 20px 3px 20px;
+      background-color: #c0b08e;
+      font-size: 0.8rem;
+    }
 
     .park-img {
       width: 30px;
@@ -146,11 +161,11 @@ onMounted(() => {
 
     @media (min-width: 435px) {
       .park-img {
-      width: 40px;
-      height: 50px;
-      top: -10px;
-      left: -20px;
-    }
+        width: 40px;
+        height: 50px;
+        top: -10px;
+        left: -20px;
+      }
       .info {
         font-size: 1rem;
         & div {
@@ -160,12 +175,17 @@ onMounted(() => {
     }
 
     @media (min-width: 768px) {
-      .park-img {
+
+      .remove {
       width: 50px;
-      height: 60px;
-      top: -10px;
-      left: -25px;
+      font-size: 1rem;
     }
+      .park-img {
+        width: 50px;
+        height: 60px;
+        top: -10px;
+        left: -25px;
+      }
       .info {
         font-size: 1.2rem;
         & div {
