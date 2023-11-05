@@ -4,9 +4,13 @@ import { defineStore } from 'pinia'
 export const useUserDataStore = defineStore('user-data', () => {
   const currentLatitude = ref(0)
   const currentLongitude = ref(0)
-  const huntedList = reactive({
+  const filterData = reactive({
     date: '',
-    huntedNum: []
+    huntedNum: [],
+    round: 0,
+    rare: 0,
+    monsterName: '',
+    distance: 30
   })
 
   function getCurrentPosition() {
@@ -41,5 +45,23 @@ export const useUserDataStore = defineStore('user-data', () => {
     return { sheetName, expiredTime }
   }
 
-  return { currentLatitude, currentLongitude, huntedList, getCurrentPosition, getStartHour, getSheetNameAndExpiredTime }
+  function getFilteredData(data) {
+    return data
+      .filter((item) => {
+        const condition1 = !filterData.huntedNum?.includes(item.serialNum);
+        const condition2 = filterData.round ? filterData.round === item.round : true;
+        const condition3 = filterData.rare ? filterData.rare === item.rare : true;
+        const condition4 = filterData.monsterName
+          ? filterData.monsterName === item.monsterName
+          : true;
+        const condition5 =
+          filterData.distance > 0
+            ? Number(item.distance) < filterData.distance
+            : Number(item.distance) > 0;
+
+        if (condition1 && condition2 && condition3 && condition4 && condition5)
+          return true;
+      })
+  }
+  return { currentLatitude, currentLongitude, filterData, getCurrentPosition, getSheetNameAndExpiredTime, getFilteredData }
 })

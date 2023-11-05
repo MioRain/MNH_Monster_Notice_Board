@@ -8,7 +8,11 @@ import axios from "axios";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
-const { huntedList, getCurrentPosition, getSheetNameAndExpiredTime } = useUserDataStore();
+const {
+  getCurrentPosition,
+  getSheetNameAndExpiredTime,
+  getFilteredData,
+} = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
@@ -88,10 +92,6 @@ const fetchMonsterList = async () => {
     const res = await axios.get(googleScriptUrl + `?sheetName=${sheetName}&now=${now}`);
     await getCurrentPosition();
 
-    if (huntedList?.huntedNum?.length > 0) {
-      res.data = res.data.filter((data) => !huntedList.huntedNum.includes(data[0]));
-    }
-
     const tempRes = res.data.map((data) => {
       let distance = getDistance(
         currentLatitude.value,
@@ -119,8 +119,9 @@ const fetchMonsterList = async () => {
       return monsterInfo;
     });
 
-    tempRes.sort((a, b) => a.distance - b.distance);
-    monsterList.value = tempRes;
+    monsterList.value = getFilteredData(tempRes).sort((a, b) => a.distance - b.distance);
+
+    if (!monsterList.value.length) alert("沒有符合篩選條件的情報");
 
     loadingStyle.value = false;
   } catch (error) {

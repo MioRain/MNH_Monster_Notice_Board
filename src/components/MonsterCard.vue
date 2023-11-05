@@ -4,20 +4,20 @@ import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 
 const { monsterList } = useEyewitnessInfoStore();
-const { huntedList } = useUserDataStore();
+const { filterData } = useUserDataStore();
 
 const hunted = (num, index) => {
   if (confirm("是否確定討伐？")) {
     const date = moment().format("YYYY/M/D");
 
-    if (huntedList.date === date) {
-      huntedList.huntedNum.push(num);
+    if (filterData.date === date) {
+      filterData.huntedNum.push(num);
     } else {
-      huntedList.date = date;
-      huntedList.huntedNum = [num];
+      filterData.date = date;
+      filterData.huntedNum = [num];
     }
 
-    localStorage.setItem("hunted", JSON.stringify(huntedList));
+    localStorage.setItem("filterData", JSON.stringify(filterData));
     monsterList.value.splice(index, 1);
   }
 };
@@ -27,11 +27,11 @@ const remove = async (num) => {
 }
 
 onMounted(() => {
-  const huntedListStore = JSON.parse(localStorage.getItem("hunted"));
-  if (huntedListStore) {
-    const { date, huntedNum } = huntedListStore;
-    huntedList.date = date;
-    huntedList.huntedNum = huntedNum;
+  const filterDataStore = JSON.parse(localStorage.getItem("filterData"));
+  if (filterDataStore) {
+    const { date, huntedNum } = filterDataStore;
+    filterData.date = date;
+    filterData.huntedNum = huntedNum;
   }
 });
 </script>
