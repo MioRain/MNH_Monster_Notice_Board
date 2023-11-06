@@ -4,6 +4,12 @@ import MonsterCard from "./components/MonsterCard.vue";
 import FeatureButton from "./components/FeatureButton.vue";
 import { useStateStore } from "@/stores/state";
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faFilter, faMap, faArrowUpFromBracket, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+
+/* add icons to the library */
+library.add(faFilter, faMap, faArrowUpFromBracket, faMagnifyingGlass)
+
 const stateStore = useStateStore();
 
 const { loadingStyle } = storeToRefs(stateStore);

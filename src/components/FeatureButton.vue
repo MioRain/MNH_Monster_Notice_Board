@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useStateStore } from "@/stores/state";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
 
 const userDataStore = useUserDataStore();
@@ -145,17 +146,23 @@ onMounted(async () => {
 
 <template>
   <div class="container">
-    <button class="map">地圖</button>
-    <button class="monster">魔物</button>
+    <button class="map">
+      <font-awesome-icon icon="fa-solid fa-map" size="xl" />
+    </button>
+    <button class="monster">
+      <font-awesome-icon icon="fa-solid fa-filter" size="xl" />
+    </button>
     <button
       type="button"
       data-bs-toggle="modal"
       data-bs-target="#exampleModal"
       class="announce"
     >
-      發布
+      <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" size="xl" />
     </button>
-    <button class="search" @click="fetchMonsterList">搜尋</button>
+    <button class="search" @click="fetchMonsterList">
+      <font-awesome-icon icon="fa-solid fa-magnifying-glass" size="xl" />
+    </button>
   </div>
 
   <div
