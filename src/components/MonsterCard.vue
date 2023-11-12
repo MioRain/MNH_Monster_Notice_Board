@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const { filteredMonsterList } = useEyewitnessInfoStore();
 const { filterData } = useUserDataStore();
@@ -40,24 +41,42 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container d-flex flex-column align-items-center">
     <div
       v-if="filteredMonsterList.value?.length > 0"
       v-for="(info, index) in filteredMonsterList.value"
-      class="monster-card"
+      class="monster-card d-flex justify-content-center"
     >
-      <button class="remove" @click="remove">Ｘ</button>
+      <button v-if="false" class="remove" @click="remove">Ｘ</button>
       <img v-if="/true/i.test(info.isPark)" class="park-img" src="/images/tree.png" />
-      <img
-        class="monster-img"
-        :src="'/images/' + info.monsterName + '.png'"
-        :alt="info[3] + '的圖片'"
-      />
 
-      <div class="info">
-        <div>
-          編號：{{ info.serialNum }} ｜ 周目：{{ info.round }} ｜ 星數：{{ info.rare }}
+      <div class="monster-img-container d-flex flex-column">
+        <div class="monster-rare d-flex justify-content-center mb-2">
+          <FontAwesomeIcon
+            v-if="info.rare === 5"
+            v-for="n in 5"
+            style="color: orange"
+            icon="fa-solid fa-star"
+            size="xs"
+          />
+          <FontAwesomeIcon
+            v-if="info.rare > 5"
+            v-for="n in info.rare - 5"
+            style="color: rgb(167, 89, 167)"
+            icon="fa-solid fa-star"
+            size="xs"
+          />
         </div>
+
+        <img
+          class="monster-img"
+          :src="'/images/' + info.monsterName + '.png'"
+          :alt="info[3] + '的圖片'"
+        />
+      </div>
+
+      <div class="info f-flex flex-colunm">
+        <div>編號：{{ info.serialNum }} ｜ 周目：{{ info.round }}</div>
         <div>
           距離 <span style="color: #a95620">{{ info.monsterName }}</span> 約
           {{
@@ -81,14 +100,11 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
   width: 100%;
   height: 100%;
   padding-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   overflow: scroll;
 
   .monster-card {
@@ -98,8 +114,6 @@ onMounted(() => {
     border-radius: 20px;
     background-color: #e2f0d6;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
     position: relative;
 
     .remove {
@@ -122,15 +136,14 @@ onMounted(() => {
       top: -10px;
       left: -15px;
     }
-    .monster-img {
-      width: 20%;
+    .monster-img-container {
+      width: 25%;
       max-width: 100px;
       margin-right: 5%;
     }
 
     .info {
-      display: flex;
-      flex-direction: column;
+      width: 65%;
       color: #3a2f26;
       font-size: 0.8rem;
       line-height: 1.5rem;
