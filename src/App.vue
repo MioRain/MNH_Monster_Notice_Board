@@ -16,6 +16,7 @@ import {
   fa3,
   fa4,
   fa5,
+  fa6,
   faTree
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -31,6 +32,7 @@ library.add(
   fa3,
   fa4,
   fa5,
+  fa6,
   faTree
 );
 

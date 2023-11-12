@@ -26,17 +26,18 @@ const {
 
 const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbzNz-T9LWaL7RZN5e2C06Tfsk27nSTqTqi7ndTJErFI5NOD5dqRtwKB5VxcsoeZmv8-0Q/exec";
+  "https://script.google.com/macros/s/AKfycbwffFtLfNXfrxYn7XMHMhsm3POUgVopsZLA_wXKbloYgTX76NH5laTWb06c-cPwwRBuJw/exec";
 
 const handleSubmit = async () => {
   try {
+    const date = moment().format("YYYY/M/D");
     if (
-      eyewitnessInfo.round > 5 ||
+      eyewitnessInfo.round > 6 ||
       eyewitnessInfo.round < 1 ||
       eyewitnessInfo.rare > 10 ||
-      eyewitnessInfo.rare < 1
+      eyewitnessInfo.rare < 5
     ) {
-      alert("周目(1~5)或星數(1~10)超過範圍");
+      alert("周目(1~6)或星數(5~10)超過範圍");
       return;
     } else if (
       confirm(`
@@ -74,10 +75,18 @@ const handleSubmit = async () => {
         },
       });
 
+      if (filterData.date === date) {
+        filterData.huntedNum.push(res.data);
+      } else {
+        filterData.date = date;
+        filterData.huntedNum = [res.data];
+      }
+
+      localStorage.setItem("filterData", JSON.stringify(filterData));
       localStorage.setItem("submitedData", JSON.stringify(payload));
       eyewitnessInfo.isPark = false;
       loadingStyle.value = false;
-      alert(res.data);
+      alert("發布成功");
     } else {
       return;
     }
@@ -217,7 +226,7 @@ onMounted(async () => {
           >
             <div class="round mx-2">
               <font-awesome-icon
-                v-for="n in 5"
+                v-for="n in 6"
                 :icon="`fa-solid fa-${n}`"
                 size="xl"
                 class="round-check"
@@ -268,7 +277,7 @@ onMounted(async () => {
             />
 
             <font-awesome-icon
-              v-for="n in filterMode ? 4 : eyewitnessInfo.round - 1"
+              v-for="n in filterMode ? 5 : eyewitnessInfo.round - 1"
               icon="fa-solid fa-star"
               size="2xl"
               class="rare-check"
