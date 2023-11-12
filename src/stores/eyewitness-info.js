@@ -15,6 +15,7 @@ export const useEyewitnessInfoStore = defineStore('eyewitness-info', () => {
   });
 
   const monsterList = reactive([])
+  const filteredMonsterList = reactive([])
 
   function getDistance(lat1, lon1, lat2, lon2, unit) {
     if ((lat1 == lat2) && (lon1 == lon2)) {
@@ -38,5 +39,5 @@ export const useEyewitnessInfoStore = defineStore('eyewitness-info', () => {
     }
   }
 
-  return { eyewitnessInfo, monsterList, getDistance }
+  return { eyewitnessInfo, monsterList, filteredMonsterList, getDistance }
 })

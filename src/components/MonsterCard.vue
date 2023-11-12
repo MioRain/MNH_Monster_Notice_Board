@@ -3,7 +3,7 @@ import { onMounted } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 
-const { monsterList } = useEyewitnessInfoStore();
+const { filteredMonsterList } = useEyewitnessInfoStore();
 const { filterData } = useUserDataStore();
 
 const hunted = (num, index) => {
@@ -18,20 +18,23 @@ const hunted = (num, index) => {
     }
 
     localStorage.setItem("filterData", JSON.stringify(filterData));
-    monsterList.value.splice(index, 1);
+    filteredMonsterList.value.splice(index, 1);
   }
 };
 
 const remove = async (num) => {
-  console.log('remove')
-}
+  console.log("remove");
+};
 
 onMounted(() => {
   const filterDataStore = JSON.parse(localStorage.getItem("filterData"));
   if (filterDataStore) {
-    const { date, huntedNum } = filterDataStore;
+    const { date, huntedNum, round, rare, monsterName } = filterDataStore;
     filterData.date = date;
     filterData.huntedNum = huntedNum;
+    filterData.round = round;
+    filterData.rare = rare;
+    filterData.monsterName = monsterName;
   }
 });
 </script>
@@ -39,8 +42,8 @@ onMounted(() => {
 <template>
   <div class="container">
     <div
-      v-if="monsterList.value?.length > 0"
-      v-for="(info, index) in monsterList.value"
+      v-if="filteredMonsterList.value?.length > 0"
+      v-for="(info, index) in filteredMonsterList.value"
       class="monster-card"
     >
       <button class="remove" @click="remove">Ｘ</button>
@@ -175,11 +178,10 @@ onMounted(() => {
     }
 
     @media (min-width: 768px) {
-
       .remove {
-      width: 50px;
-      font-size: 1rem;
-    }
+        width: 50px;
+        font-size: 1rem;
+      }
       .park-img {
         width: 50px;
         height: 60px;

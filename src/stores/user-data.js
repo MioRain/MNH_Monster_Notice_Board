@@ -50,7 +50,7 @@ export const useUserDataStore = defineStore('user-data', () => {
       .filter((item) => {
         const condition1 = !filterData.huntedNum?.includes(item.serialNum);
         const condition2 = filterData.round ? filterData.round === item.round : true;
-        const condition3 = filterData.rare ? filterData.rare === item.rare : true;
+        const condition3 = filterData.rare ? filterData.rare >= item.rare : true;
         const condition4 = filterData.monsterName
           ? filterData.monsterName === item.monsterName
           : true;

@@ -13,10 +13,16 @@ const {
   getCurrentPosition,
   getSheetNameAndExpiredTime,
   getFilteredData,
+  filterData,
 } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
-const { loadingStyle } = storeToRefs(stateStore);
-const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
+const { loadingStyle, filterMode } = storeToRefs(stateStore);
+const {
+  eyewitnessInfo,
+  monsterList,
+  filteredMonsterList,
+  getDistance,
+} = useEyewitnessInfoStore();
 
 const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
@@ -69,6 +75,7 @@ const handleSubmit = async () => {
       });
 
       localStorage.setItem("submitedData", JSON.stringify(payload));
+      eyewitnessInfo.isPark = false;
       loadingStyle.value = false;
       alert(res.data);
     } else {
@@ -84,6 +91,15 @@ const handleSubmit = async () => {
   }
 };
 
+const handelFilter = () => {
+  if (monsterList.value.length) {
+    filteredMonsterList.value = getFilteredData(monsterList.value).sort(
+      (a, b) => a.distance - b.distance
+    );
+  }
+  localStorage.setItem("filterData", JSON.stringify(filterData));
+};
+
 const fetchMonsterList = async () => {
   try {
     const now = encodeURIComponent(moment().format());
@@ -94,7 +110,7 @@ const fetchMonsterList = async () => {
     const res = await axios.get(googleScriptUrl + `?sheetName=${sheetName}&now=${now}`);
     await getCurrentPosition();
 
-    const tempRes = res.data.map((data) => {
+    monsterList.value = res.data.map((data) => {
       let distance = getDistance(
         currentLatitude.value,
         currentLongitude.value,
@@ -121,9 +137,11 @@ const fetchMonsterList = async () => {
       return monsterInfo;
     });
 
-    monsterList.value = getFilteredData(tempRes).sort((a, b) => a.distance - b.distance);
+    filteredMonsterList.value = getFilteredData(monsterList.value).sort(
+      (a, b) => a.distance - b.distance
+    );
 
-    if (!monsterList.value.length) alert("沒有符合篩選條件的情報");
+    if (!filteredMonsterList.value.length) alert("沒有符合篩選條件的情報");
 
     loadingStyle.value = false;
   } catch (error) {
@@ -150,14 +168,24 @@ onMounted(async () => {
     <button class="map">
       <font-awesome-icon icon="fa-solid fa-map" size="xl" />
     </button>
-    <button class="monster">
-      <font-awesome-icon icon="fa-solid fa-filter" size="xl" />
+    <button
+      class="filter"
+      type="button"
+      data-bs-toggle="modal"
+      data-bs-target="#announceModal"
+    >
+      <font-awesome-icon
+        icon="fa-solid fa-filter"
+        size="xl"
+        @click="() => (filterMode = true)"
+      />
     </button>
     <button
       type="button"
       data-bs-toggle="modal"
       data-bs-target="#announceModal"
       class="announce"
+      @click="() => (filterMode = false)"
     >
       <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" size="xl" />
     </button>
@@ -176,7 +204,12 @@ onMounted(async () => {
     <div class="modal-dialog modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="announceModalLabel">發布目擊情報</h1>
+          <h1 v-show="!filterMode" class="modal-title fs-5" id="announceModalLabel">
+            發布目擊情報
+          </h1>
+          <h1 v-show="filterMode" class="modal-title fs-5" id="announceModalLabel">
+            篩選目擊情報
+          </h1>
         </div>
         <div class="modal-body">
           <div
@@ -188,17 +221,25 @@ onMounted(async () => {
                 :icon="`fa-solid fa-${n}`"
                 size="xl"
                 class="round-check"
-                :class="{ checked: eyewitnessInfo.round === n }"
+                :class="{
+                  checked: filterMode
+                    ? filterData.round === n
+                    : eyewitnessInfo.round === n,
+                }"
                 @click="
                   () => {
-                    eyewitnessInfo.round = n;
-                    eyewitnessInfo.rare = n + 4;
+                    if (filterMode) {
+                      filterData.round = n;
+                    } else {
+                      eyewitnessInfo.round = n;
+                      eyewitnessInfo.rare = n + 4;
+                    }
                   }
                 "
               />
             </div>
 
-            <div class="park px-3">
+            <div v-show="!filterMode" class="park px-3">
               <font-awesome-icon
                 icon="fa-solid fa-tree"
                 size="2xl"
@@ -214,17 +255,37 @@ onMounted(async () => {
               icon="fa-solid fa-star"
               size="2xl"
               class="rare-check"
-              style="color: orange"
-              @click="() => (eyewitnessInfo.rare = 5)"
+              :style="{ color: filterMode && filterData.rare < 5 ? '' : 'orange' }"
+              @click="
+                () => {
+                  if (filterMode) {
+                    filterData.rare = 5;
+                  } else {
+                    eyewitnessInfo.rare = 5;
+                  }
+                }
+              "
             />
 
             <font-awesome-icon
-              v-for="n in eyewitnessInfo.round - 1"
+              v-for="n in filterMode ? 4 : eyewitnessInfo.round - 1"
               icon="fa-solid fa-star"
               size="2xl"
               class="rare-check"
-              :class="{ 'purple-star': eyewitnessInfo.rare >= n + 5 }"
-              @click="() => (eyewitnessInfo.rare = n + 5)"
+              :class="{
+                'purple-star': filterMode
+                  ? filterData.rare >= n + 5
+                  : eyewitnessInfo.rare >= n + 5,
+              }"
+              @click="
+                () => {
+                  if (filterMode) {
+                    filterData.rare = n + 5;
+                  } else {
+                    eyewitnessInfo.rare = n + 5;
+                  }
+                }
+              "
             />
           </div>
 
@@ -232,12 +293,20 @@ onMounted(async () => {
             <img
               v-for="monsterName in rareMonsterList"
               class="monster-img"
-              :class="{ 'name-check': eyewitnessInfo.monsterName === monsterName }"
+              :class="{
+                'name-check': filterMode
+                  ? filterData.monsterName === monsterName
+                  : eyewitnessInfo.monsterName === monsterName,
+              }"
               :src="'/images/' + monsterName + '.png'"
               :alt="monsterName + '的圖片'"
               @click="
                 () => {
-                  eyewitnessInfo.monsterName = monsterName;
+                  if (filterMode) {
+                    filterData.monsterName = monsterName;
+                  } else {
+                    eyewitnessInfo.monsterName = monsterName;
+                  }
                 }
               "
             />
@@ -245,16 +314,46 @@ onMounted(async () => {
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">
+          <button
+            v-show="!filterMode"
+            type="button"
+            class="btn btn-secondary close"
+            data-bs-dismiss="modal"
+          >
             取消
           </button>
           <button
+            v-show="!filterMode"
             type="button"
             class="btn btn-primary announce-submit"
             @click="handleSubmit"
             data-bs-dismiss="modal"
           >
             送出
+          </button>
+          <button
+            v-show="filterMode"
+            type="button"
+            class="btn btn-warning announce-submit"
+            @click="
+              () => {
+                filterData.round = 0;
+                filterData.rare = 0;
+                filterData.monsterName = '';
+                filterData.distance = 30;
+              }
+            "
+          >
+            重置
+          </button>
+          <button
+            v-show="filterMode"
+            type="button"
+            class="btn btn-primary announce-submit"
+            data-bs-dismiss="modal"
+            @click="handelFilter"
+          >
+            確定
           </button>
         </div>
       </div>
@@ -273,8 +372,7 @@ onMounted(async () => {
   justify-content: space-evenly;
   align-items: center;
 
-  .map,
-  .monster {
+  .map {
     pointer-events: none;
     background-color: #c0b08e;
     color: white;
