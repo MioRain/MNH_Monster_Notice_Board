@@ -4,11 +4,35 @@ import MonsterCard from "./components/MonsterCard.vue";
 import FeatureButton from "./components/FeatureButton.vue";
 import { useStateStore } from "@/stores/state";
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faFilter, faMap, faArrowUpFromBracket, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faFilter,
+  faMap,
+  faArrowUpFromBracket,
+  faMagnifyingGlass,
+  faStar,
+  fa1,
+  fa2,
+  fa3,
+  fa4,
+  fa5,
+  faTree
+} from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
-library.add(faFilter, faMap, faArrowUpFromBracket, faMagnifyingGlass)
+library.add(
+  faFilter,
+  faMap,
+  faArrowUpFromBracket,
+  faMagnifyingGlass,
+  faStar,
+  fa1,
+  fa2,
+  fa3,
+  fa4,
+  fa5,
+  faTree
+);
 
 const stateStore = useStateStore();
 
@@ -42,7 +66,7 @@ const { loadingStyle } = storeToRefs(stateStore);
   display: flex;
   justify-content: center;
   align-items: center;
-  user-select:none;
+  user-select: none;
   z-index: 100;
 }
 

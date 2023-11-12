@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
@@ -18,6 +18,7 @@ const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle } = storeToRefs(stateStore);
 const { eyewitnessInfo, monsterList, getDistance } = useEyewitnessInfoStore();
 
+const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
   "https://script.google.com/macros/s/AKfycbzNz-T9LWaL7RZN5e2C06Tfsk27nSTqTqi7ndTJErFI5NOD5dqRtwKB5VxcsoeZmv8-0Q/exec";
 
@@ -155,7 +156,7 @@ onMounted(async () => {
     <button
       type="button"
       data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
+      data-bs-target="#announceModal"
       class="announce"
     >
       <font-awesome-icon icon="fa-solid fa-arrow-up-from-bracket" size="xl" />
@@ -167,85 +168,78 @@ onMounted(async () => {
 
   <div
     class="modal fade"
-    id="exampleModal"
+    id="announceModal"
     tabindex="-1"
-    aria-labelledby="exampleModalLabel"
+    aria-labelledby="announceModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">發布目擊情報</h1>
+          <h1 class="modal-title fs-5" id="announceModalLabel">發布目擊情報</h1>
         </div>
         <div class="modal-body">
-          <div class="form-check">
-            <label class="form-check-label park-area" for="flexCheckDefault">
-              是否為公園地區？
-            </label>
-            <input
-              class="form-check-input"
-              type="checkbox"
-              id="flexCheckDefault"
-              v-model="eyewitnessInfo.isPark"
+          <div
+            class="round-and-park d-flex justify-content-center align-items-center mb-3"
+          >
+            <div class="round mx-2">
+              <font-awesome-icon
+                v-for="n in 5"
+                :icon="`fa-solid fa-${n}`"
+                size="xl"
+                class="round-check"
+                :class="{ checked: eyewitnessInfo.round === n }"
+                @click="
+                  () => {
+                    eyewitnessInfo.round = n;
+                    eyewitnessInfo.rare = n + 4;
+                  }
+                "
+              />
+            </div>
+
+            <div class="park px-3">
+              <font-awesome-icon
+                icon="fa-solid fa-tree"
+                size="2xl"
+                class="park-icon"
+                :class="{ 'park-check': eyewitnessInfo.isPark }"
+                @click="() => (eyewitnessInfo.isPark = !eyewitnessInfo.isPark)"
+              />
+            </div>
+          </div>
+
+          <div class="rare d-flex justify-content-center">
+            <font-awesome-icon
+              icon="fa-solid fa-star"
+              size="2xl"
+              class="rare-check"
+              style="color: orange"
+              @click="() => (eyewitnessInfo.rare = 5)"
+            />
+
+            <font-awesome-icon
+              v-for="n in eyewitnessInfo.round - 1"
+              icon="fa-solid fa-star"
+              size="2xl"
+              class="rare-check"
+              :class="{ 'purple-star': eyewitnessInfo.rare >= n + 5 }"
+              @click="() => (eyewitnessInfo.rare = n + 5)"
             />
           </div>
 
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">目擊魔物</span>
-            <select
-              class="form-control"
-              id="monster"
-              name="monster"
-              v-model="eyewitnessInfo.monsterName"
-            >
-              <option>大凶豺龍</option>
-              <option>搔鳥</option>
-              <option>毒妖鳥</option>
-              <option>土砂龍</option>
-              <option>大凶顎龍</option>
-              <option>飛雷龍</option>
-              <option>浮空龍</option>
-              <option>泥魚龍</option>
-              <option>蠻顎龍</option>
-              <option>風漂龍</option>
-              <option>角龍</option>
-              <option>黑角龍</option>
-              <option>火龍</option>
-              <!-- <option>蒼火龍</option> -->
-              <option>雌火龍</option>
-              <option>櫻火龍</option>
-            </select>
-          </div>
-
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default">周目(1~5)</span>
-            <input
-              type="number"
-              class="form-control"
-              aria-label="round"
-              id="round"
-              name="round"
-              min="1"
-              max="5"
-              inputmode="numeric"
-              v-model="eyewitnessInfo.round"
-            />
-          </div>
-
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="inputGroup-sizing-default"
-              >星數(1~10)</span
-            >
-            <input
-              type="number"
-              class="form-control"
-              aria-label="rare"
-              id="rare"
-              name="rare"
-              min="1"
-              max="10"
-              inputmode="numeric"
-              v-model="eyewitnessInfo.rare"
+          <div class="monster-name d-flex justify-content-evenly">
+            <img
+              v-for="monsterName in rareMonsterList"
+              class="monster-img"
+              :class="{ 'name-check': eyewitnessInfo.monsterName === monsterName }"
+              :src="'/images/' + monsterName + '.png'"
+              :alt="monsterName + '的圖片'"
+              @click="
+                () => {
+                  eyewitnessInfo.monsterName = monsterName;
+                }
+              "
             />
           </div>
         </div>
@@ -268,7 +262,7 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
   width: 100%;
   height: 100px;
@@ -322,5 +316,49 @@ onMounted(async () => {
 
 span {
   width: 110px;
+}
+
+.round,
+.rare {
+  margin-bottom: 5px;
+  color: rgba(128, 128, 128, 0.3);
+
+  .round-check {
+    margin: 0 10px;
+    cursor: pointer;
+    &.checked {
+      color: rgb(179, 56, 56);
+      font-weight: 700;
+    }
+  }
+  .rare-check {
+    margin: 5px 4px;
+    cursor: pointer;
+    &.purple-star {
+      color: rgb(167, 89, 167);
+    }
+  }
+}
+
+.park {
+  .park-icon {
+    color: rgb(62, 123, 62);
+    opacity: 0.4;
+  }
+  .park-check {
+    opacity: 1;
+  }
+}
+
+.monster-name {
+  margin: 5%;
+  .monster-img {
+    width: 20%;
+    max-width: 100px;
+    opacity: 0.4;
+    &.name-check {
+      opacity: 1;
+    }
+  }
 }
 </style>
