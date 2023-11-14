@@ -35,9 +35,10 @@ const handleSubmit = async () => {
       eyewitnessInfo.round > 6 ||
       eyewitnessInfo.round < 1 ||
       eyewitnessInfo.rare > 10 ||
-      eyewitnessInfo.rare < 5
+      eyewitnessInfo.rare < 5 ||
+      eyewitnessInfo.monsterName === ''
     ) {
-      alert("周目(1~6)或星數(5~10)超過範圍");
+      alert("周目(1~6)或星數(5~10)超過範圍，或尚未選擇目擊魔物");
       return;
     } else if (
       confirm(`
@@ -66,7 +67,7 @@ const handleSubmit = async () => {
         rare: eyewitnessInfo.rare,
         latitude: currentLatitude.value,
         longitude: currentLongitude.value,
-        mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
+        mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`
       };
 
       const res = await axios.post(googleScriptUrl, payload, {
@@ -120,13 +121,15 @@ const fetchMonsterList = async () => {
     await getCurrentPosition();
 
     monsterList.value = res.data.map((data) => {
-      let distance = getDistance(
+      const distance = getDistance(
         currentLatitude.value,
         currentLongitude.value,
         data[7],
         data[8],
         "K"
       );
+
+      const likeRatio = Math.floor(Number(data[10]) / (Number(data[10]) + Number(data[11])) * 100)
 
       const monsterInfo = {
         serialNum: data[0],
@@ -139,8 +142,8 @@ const fetchMonsterList = async () => {
         lat: data[7],
         lng: data[8],
         mapLink: data[9],
-        expiredTime: data[10],
         distance: Number.parseFloat(distance).toFixed(3),
+        likeRatio: likeRatio ? `${likeRatio}%` : ''
       };
 
       return monsterInfo;

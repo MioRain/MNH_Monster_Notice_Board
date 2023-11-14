@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -45,9 +45,9 @@ onMounted(() => {
     <div
       v-if="filteredMonsterList.value?.length > 0"
       v-for="(info, index) in filteredMonsterList.value"
-      class="monster-card d-flex justify-content-center"
+      class="monster-card d-flex justify-content-center pb-4"
     >
-      <button v-if="false" class="remove" @click="remove">Ｘ</button>
+      <button class="remove" @click="remove">Ｘ</button>
       <img v-if="/true/i.test(info.isPark)" class="park-img" src="/images/tree.png" />
 
       <div class="monster-img-container d-flex flex-column">
@@ -91,6 +91,10 @@ onMounted(() => {
           </div>
           <button class="hunted" @click="hunted(info.serialNum, index)">討伐完成</button>
         </div>
+      </div>
+
+      <div class="like-ratio" :style="{ '--like-ratio': info.likeRatio }">
+        <span>{{ info.likeRatio }}</span>
       </div>
     </div>
 
@@ -172,6 +176,33 @@ onMounted(() => {
             color: black;
           }
         }
+      }
+    }
+
+    .like-ratio {
+      width: 88%;
+      height: 6%;
+      position: absolute;
+      bottom: 3%;
+      border-radius: 50px;
+      background-color: rgba(128, 128, 128, 0.6);
+
+      &::before {
+        content: "";
+        width: var(--like-ratio);
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50px;
+        background-color: #a957209a;
+      }
+
+      & span {
+        position: absolute;
+        top: -18px;
+        left: max(0%, calc(var(--like-ratio) - 35px));
+        font-size: 0.9rem;
       }
     }
 
