@@ -6,7 +6,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   const currentLongitude = ref(0)
   const filterData = reactive({
     date: '',
-    huntedNum: [],
+    filteredNum: [],
     round: 0,
     rare: 0,
     monsterName: '',
@@ -48,7 +48,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   function getFilteredData(data) {
     return data
       .filter((item) => {
-        const condition1 = !filterData.huntedNum?.includes(item.serialNum);
+        const condition1 = !filterData.filteredNum?.includes(item.serialNum);
         const condition2 = filterData.round ? filterData.round === item.round : true;
         const condition3 = filterData.rare ? filterData.rare >= item.rare : true;
         const condition4 = filterData.monsterName

@@ -26,7 +26,7 @@ const {
 
 const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbwffFtLfNXfrxYn7XMHMhsm3POUgVopsZLA_wXKbloYgTX76NH5laTWb06c-cPwwRBuJw/exec";
+  "https://script.google.com/macros/s/AKfycbx1moX8y72JlTvKWSVe7U6-CsPyxOItMiH5JcJdokp2bUK3DTkseCt6wmBIf0SpW7i46g/exec";
 
 const handleSubmit = async () => {
   try {
@@ -36,7 +36,7 @@ const handleSubmit = async () => {
       eyewitnessInfo.round < 1 ||
       eyewitnessInfo.rare > 10 ||
       eyewitnessInfo.rare < 5 ||
-      eyewitnessInfo.monsterName === ''
+      eyewitnessInfo.monsterName === ""
     ) {
       alert("周目(1~6)或星數(5~10)超過範圍，或尚未選擇目擊魔物");
       return;
@@ -67,7 +67,7 @@ const handleSubmit = async () => {
         rare: eyewitnessInfo.rare,
         latitude: currentLatitude.value,
         longitude: currentLongitude.value,
-        mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`
+        mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
       };
 
       const res = await axios.post(googleScriptUrl, payload, {
@@ -77,10 +77,10 @@ const handleSubmit = async () => {
       });
 
       if (filterData.date === date) {
-        filterData.huntedNum.push(res.data);
+        filterData.filteredNum.push(res.data);
       } else {
         filterData.date = date;
-        filterData.huntedNum = [res.data];
+        filterData.filteredNum = [res.data];
       }
 
       localStorage.setItem("filterData", JSON.stringify(filterData));
@@ -129,7 +129,9 @@ const fetchMonsterList = async () => {
         "K"
       );
 
-      const likeRatio = Math.floor(Number(data[10]) / (Number(data[10]) + Number(data[11])) * 100)
+      const likeRatio = Math.floor(
+        (Number(data[10]) / (Number(data[10]) + Number(data[11]))) * 100
+      );
 
       const monsterInfo = {
         serialNum: data[0],
@@ -143,7 +145,7 @@ const fetchMonsterList = async () => {
         lng: data[8],
         mapLink: data[9],
         distance: Number.parseFloat(distance).toFixed(3),
-        likeRatio: likeRatio ? `${likeRatio}%` : ''
+        likeRatio: likeRatio ? `${likeRatio}%` : "",
       };
 
       return monsterInfo;
