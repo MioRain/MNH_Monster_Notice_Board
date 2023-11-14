@@ -6,12 +6,12 @@ export const useEyewitnessInfoStore = defineStore('eyewitness-info', () => {
     time: '',
     expiredTime: '',
     isPark: false,
-    monsterName: "大凶豺龍",
+    monsterName: '',
     round: 1,
     rare: 5,
     latitude: 0,
     longitude: 0,
-    mapLink: "",
+    mapLink: '',
   });
 
   const monsterList = reactive([])
