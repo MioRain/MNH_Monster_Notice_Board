@@ -36,7 +36,7 @@ const handleSubmit = async () => {
       eyewitnessInfo.round < 1 ||
       eyewitnessInfo.rare > 10 ||
       eyewitnessInfo.rare < 5 ||
-      eyewitnessInfo.monsterName === ""
+      !rareMonsterList.includes(eyewitnessInfo.monsterName)
     ) {
       alert("周目(1~6)或星數(5~10)超過範圍，或尚未選擇目擊魔物");
       return;
@@ -324,6 +324,25 @@ onMounted(async () => {
               "
             />
           </div>
+
+          <div class="show-distance d-flex justify-content-center">
+            <button
+              v-show="filterMode"
+              class="nearby p-2 m-2"
+              :class="{ check: filterData.distance === 30 }"
+              @click="() => (filterData.distance = 30)"
+            >
+              附近魔物
+            </button>
+            <button
+              v-show="filterMode"
+              class="all p-2 m-2"
+              :class="{ check: filterData.distance === 0 }"
+              @click="() => (filterData.distance = 0)"
+            >
+              所有魔物
+            </button>
+          </div>
         </div>
 
         <div class="modal-footer">
@@ -480,6 +499,20 @@ span {
     opacity: 0.4;
     &.name-check {
       opacity: 1;
+    }
+  }
+}
+
+.show-distance {
+  button {
+    width: 100px;
+    border-radius: 50px;
+    background-color: #e2f0d6;
+    color: rgba(128, 128, 128, 0.7);
+    font-weight: 500;
+    &.check {
+      border: 1px solid #c0b08e;
+      color: black;
     }
   }
 }

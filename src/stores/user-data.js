@@ -10,7 +10,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     round: 0,
     rare: 0,
     monsterName: '',
-    distance: 30
+    distance: 0
   })
 
   function getCurrentPosition() {
