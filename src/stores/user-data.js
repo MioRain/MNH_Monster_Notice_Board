@@ -12,6 +12,8 @@ export const useUserDataStore = defineStore('user-data', () => {
     monsterName: '',
     distance: 0
   })
+  const openStreetMap = reactive({})
+  const markersLayer = reactive({})
 
   function getCurrentPosition() {
     return new Promise((resolve, reject) => {
@@ -63,5 +65,5 @@ export const useUserDataStore = defineStore('user-data', () => {
           return true;
       })
   }
-  return { currentLatitude, currentLongitude, filterData, getCurrentPosition, getSheetNameAndExpiredTime, getFilteredData }
+  return { currentLatitude, currentLongitude, filterData, openStreetMap, markersLayer, getCurrentPosition, getSheetNameAndExpiredTime, getFilteredData }
 })

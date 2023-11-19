@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import OpenStreetMap from "../components/OpenStreetMap.vue";
 import axios from "axios";
 
 const { filteredMonsterList } = useEyewitnessInfoStore();
@@ -12,7 +13,7 @@ const googleScriptUrl =
   "https://script.google.com/macros/s/AKfycby1mKeTOO9bSG8BdwdSH_MjxDr_UkXL2p6ZJZ000XBnLa3Sx-77ATEde54OvYF1BkX9ig/exec";
 
 const remove = async (action, serialNum, index) => {
-  if (confirm(action === 'hunted' ? "是否確定討伐？" : "是否確定移除？")) {
+  if (confirm(action === "hunted" ? "是否確定討伐？" : "是否確定移除？")) {
     const date = moment().format("YYYY/M/D");
 
     if (filterData.date === date) {
@@ -53,6 +54,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <OpenStreetMap />
   <div class="container d-flex flex-column align-items-center">
     <div
       v-if="filteredMonsterList.value?.length > 0"
@@ -101,7 +103,9 @@ onMounted(() => {
           <div class="coordinate">
             <a :href="info.mapLink" target="_blank">鎖定座標</a>
           </div>
-          <button class="hunted" @click="remove('hunted', info.serialNum, index)">討伐完成</button>
+          <button class="hunted" @click="remove('hunted', info.serialNum, index)">
+            討伐完成
+          </button>
         </div>
       </div>
 

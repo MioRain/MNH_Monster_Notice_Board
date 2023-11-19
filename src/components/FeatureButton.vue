@@ -6,6 +6,7 @@ import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useStateStore } from "@/stores/state";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
+import L from "leaflet";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
@@ -14,9 +15,10 @@ const {
   getSheetNameAndExpiredTime,
   getFilteredData,
   filterData,
+  markersLayer,
 } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
-const { loadingStyle, filterMode } = storeToRefs(stateStore);
+const { loadingStyle, filterMode, showMap } = storeToRefs(stateStore);
 const {
   eyewitnessInfo,
   monsterList,
@@ -107,6 +109,7 @@ const handelFilter = () => {
       (a, b) => a.distance - b.distance
     );
   }
+  mapSwitch();
   localStorage.setItem("filterData", JSON.stringify(filterData));
 };
 
@@ -157,6 +160,8 @@ const fetchMonsterList = async () => {
 
     if (!filteredMonsterList.value.length) alert("沒有符合篩選條件的情報");
 
+    mapSwitch();
+
     loadingStyle.value = false;
   } catch (error) {
     console.error(error);
@@ -165,6 +170,23 @@ const fetchMonsterList = async () => {
     loadingStyle.value = false;
   }
 };
+
+function mapSwitch() {
+  showMap.value = !showMap.value;
+  markersLayer.value.clearLayers();
+
+  if (filteredMonsterList.value?.length > 0) {
+    filteredMonsterList.value.forEach((monster) => {
+      L.marker([monster.lat, monster.lng], {
+        icon: L.icon({
+          iconUrl: `/images/${monster.monsterName}.png`,
+          iconSize: [50, 50],
+        }),
+        opacity: 1.0,
+      }).addTo(markersLayer.value);
+    });
+  }
+}
 
 onMounted(async () => {
   const submitedData = JSON.parse(localStorage.getItem("submitedData"));
@@ -179,7 +201,7 @@ onMounted(async () => {
 
 <template>
   <div class="container">
-    <button class="map">
+    <button class="map" @click="mapSwitch">
       <font-awesome-icon icon="fa-solid fa-map" size="xl" />
     </button>
     <button
@@ -396,20 +418,14 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .container {
   width: 100%;
-  height: 100px;
+  height: 180px;
   background-color: #fcf4e9;
   border-top: 5px solid #c0b08e;
   border-radius: 0 0 30px 30px;
+  position: relative;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-
-  .map {
-    pointer-events: none;
-    background-color: #c0b08e;
-    color: white;
-    opacity: 0.3;
-  }
 
   & button {
     width: 65px;
@@ -516,6 +532,13 @@ span {
     }
   }
 }
+
+.map {
+    pointer-events: none;
+    background-color: #c0b08e;
+    opacity: 0.3;
+  }
+
 
 #announceModal {
   .modal-content {
