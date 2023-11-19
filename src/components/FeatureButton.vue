@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useUserDataStore } from "@/stores/user-data";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
@@ -187,12 +187,9 @@ onMounted(async () => {
       type="button"
       data-bs-toggle="modal"
       data-bs-target="#announceModal"
+      @click="() => (filterMode = true)"
     >
-      <font-awesome-icon
-        icon="fa-solid fa-filter"
-        size="xl"
-        @click="() => (filterMode = true)"
-      />
+      <font-awesome-icon icon="fa-solid fa-filter" size="xl" />
     </button>
     <button
       type="button"
@@ -227,33 +224,74 @@ onMounted(async () => {
         </div>
         <div class="modal-body">
           <div
-            class="round-and-park d-flex justify-content-center align-items-center mb-3"
+            class="content-group d-flex justify-content-center align-items-center mb-3"
           >
-            <div class="round mx-2">
-              <font-awesome-icon
-                v-for="n in 6"
-                :icon="`fa-solid fa-${n}`"
-                size="xl"
-                class="round-check"
-                :class="{
-                  checked: filterMode
-                    ? filterData.round === n
-                    : eyewitnessInfo.round === n,
-                }"
-                @click="
-                  () => {
-                    if (filterMode) {
-                      filterData.round = n;
-                    } else {
-                      eyewitnessInfo.round = n;
-                      eyewitnessInfo.rare = n + 4;
+            <div class="round-and-rare d-flex flex-column align-items-center">
+              <div class="round d-flex justify-content-center align-items-center mx-3">
+                <font-awesome-icon
+                  v-for="n in 6"
+                  :icon="`fa-solid fa-${n}`"
+                  size="xl"
+                  class="round-check"
+                  :class="{
+                    checked: filterMode
+                      ? filterData.round === n
+                      : eyewitnessInfo.round === n,
+                  }"
+                  @click="
+                    () => {
+                      if (filterMode) {
+                        filterData.round = n;
+                      } else {
+                        eyewitnessInfo.round = n;
+                        eyewitnessInfo.rare = n + 4;
+                      }
                     }
-                  }
-                "
-              />
+                  "
+                />
+              </div>
+
+              <div class="rare d-flex justify-content-center px-3">
+                <font-awesome-icon
+                  icon="fa-solid fa-star"
+                  size="xl"
+                  class="rare-check"
+                  :style="{ color: filterMode && filterData.rare < 5 ? '' : 'orange' }"
+                  @click="
+                    () => {
+                      if (filterMode) {
+                        filterData.rare = 5;
+                      } else {
+                        eyewitnessInfo.rare = 5;
+                      }
+                    }
+                  "
+                />
+
+                <font-awesome-icon
+                  v-for="n in filterMode ? 5 : eyewitnessInfo.round - 1"
+                  icon="fa-solid fa-star"
+                  size="xl"
+                  class="rare-check"
+                  :class="{
+                    'purple-star': filterMode
+                      ? filterData.rare >= n + 5
+                      : eyewitnessInfo.rare >= n + 5,
+                  }"
+                  @click="
+                    () => {
+                      if (filterMode) {
+                        filterData.rare = n + 5;
+                      } else {
+                        eyewitnessInfo.rare = n + 5;
+                      }
+                    }
+                  "
+                />
+              </div>
             </div>
 
-            <div v-show="!filterMode" class="park px-3">
+            <div v-show="!filterMode" class="park ms-2">
               <font-awesome-icon
                 icon="fa-solid fa-tree"
                 size="2xl"
@@ -262,45 +300,6 @@ onMounted(async () => {
                 @click="() => (eyewitnessInfo.isPark = !eyewitnessInfo.isPark)"
               />
             </div>
-          </div>
-
-          <div class="rare d-flex justify-content-center">
-            <font-awesome-icon
-              icon="fa-solid fa-star"
-              size="2xl"
-              class="rare-check"
-              :style="{ color: filterMode && filterData.rare < 5 ? '' : 'orange' }"
-              @click="
-                () => {
-                  if (filterMode) {
-                    filterData.rare = 5;
-                  } else {
-                    eyewitnessInfo.rare = 5;
-                  }
-                }
-              "
-            />
-
-            <font-awesome-icon
-              v-for="n in filterMode ? 5 : eyewitnessInfo.round - 1"
-              icon="fa-solid fa-star"
-              size="2xl"
-              class="rare-check"
-              :class="{
-                'purple-star': filterMode
-                  ? filterData.rare >= n + 5
-                  : eyewitnessInfo.rare >= n + 5,
-              }"
-              @click="
-                () => {
-                  if (filterMode) {
-                    filterData.rare = n + 5;
-                  } else {
-                    eyewitnessInfo.rare = n + 5;
-                  }
-                }
-              "
-            />
           </div>
 
           <div class="monster-name d-flex justify-content-evenly">
@@ -430,35 +429,46 @@ span {
   width: 110px;
 }
 
-.round,
-.rare {
-  margin-bottom: 5px;
-  color: rgba(128, 128, 128, 0.3);
+.content-group {
+  width: 100%;
+  .round,
+  .rare {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 5px;
+    background-color: #e2f0d6;
+    border-radius: 50px;
+    color: rgba(128, 128, 128, 0.3);
 
-  .round-check {
-    margin: 0 10px;
-    cursor: pointer;
-    &.checked {
-      color: rgb(179, 56, 56);
-      font-weight: 700;
+    .round-check {
+      margin: 0 10px;
+      cursor: pointer;
+      &.checked {
+        color: rgb(179, 56, 56);
+        font-weight: 700;
+      }
+    }
+    .rare-check {
+      margin: 5px 4px;
+      cursor: pointer;
+      &.purple-star {
+        color: rgb(167, 89, 167);
+      }
     }
   }
-  .rare-check {
-    margin: 5px 4px;
-    cursor: pointer;
-    &.purple-star {
-      color: rgb(167, 89, 167);
-    }
-  }
-}
 
-.park {
-  .park-icon {
-    color: rgb(62, 123, 62);
-    opacity: 0.4;
-  }
-  .park-check {
-    opacity: 1;
+  .park {
+    height: 100%;
+    padding: 29px 20px;
+    background-color: #e2f0d6;
+    border-radius: 15px;
+    .park-icon {
+      color: rgba(128, 128, 128, 0.3);
+    }
+    .park-check {
+      color: rgb(62, 123, 62);
+      opacity: 1;
+    }
   }
 }
 
@@ -471,6 +481,12 @@ span {
     &.name-check {
       opacity: 1;
     }
+  }
+}
+
+#announceModal {
+  .modal-content {
+    background-color: #fcf4e9;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
