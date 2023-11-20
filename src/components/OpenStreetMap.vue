@@ -14,6 +14,12 @@ const { toggleMap } = storeToRefs(stateStore);
 onMounted(async () => {
   await getCurrentPosition();
 
+  L.Popup.prototype._animateZoom = function (e) {
+    if (!this._map) {
+      return;
+    }
+  };
+
   openStreetMap.value = L.map("map", {
     center: [currentLatitude.value, currentLongitude.value],
     zoom: 15,

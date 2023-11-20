@@ -6,7 +6,6 @@ import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useStateStore } from "@/stores/state";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
-import L from "leaflet";
 
 const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
@@ -14,8 +13,8 @@ const {
   getCurrentPosition,
   getSheetNameAndExpiredTime,
   getFilteredData,
-  filterData,
-  markersLayer,
+  addMarker,
+  filterData
 } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle, filterMode, toggleMap } = storeToRefs(stateStore);
@@ -104,7 +103,7 @@ const handleSubmit = async () => {
 };
 
 const handelFilter = () => {
-  if (monsterList.value.length) {
+  if (monsterList.value?.length) {
     filteredMonsterList.value = getFilteredData(monsterList.value).sort(
       (a, b) => a.distance - b.distance
     );
@@ -172,24 +171,8 @@ const fetchMonsterList = async () => {
 };
 
 const mapSwitch = () => {
-  toggleMap.value = !toggleMap.value
-}
-
-function addMarker() {
-  markersLayer.value.clearLayers();
-
-  if (filteredMonsterList.value?.length > 0) {
-    filteredMonsterList.value.forEach((monster) => {
-      L.marker([monster.lat, monster.lng], {
-        icon: L.icon({
-          iconUrl: `/images/${monster.monsterName}.png`,
-          iconSize: [50, 50],
-        }),
-        opacity: 1.0,
-      }).addTo(markersLayer.value);
-    });
-  }
-}
+  toggleMap.value = !toggleMap.value;
+};
 
 onMounted(async () => {
   const submitedData = JSON.parse(localStorage.getItem("submitedData"));

@@ -1,7 +1,15 @@
 import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
+import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 
 export const useUserDataStore = defineStore('user-data', () => {
+
+  const {
+    monsterList,
+    filteredMonsterList,
+  } = useEyewitnessInfoStore();
+
+
   const currentLatitude = ref(0)
   const currentLongitude = ref(0)
   const filterData = reactive({
@@ -65,5 +73,30 @@ export const useUserDataStore = defineStore('user-data', () => {
           return true;
       })
   }
-  return { currentLatitude, currentLongitude, filterData, openStreetMap, markersLayer, getCurrentPosition, getSheetNameAndExpiredTime, getFilteredData }
+
+  function addMarker() {
+    markersLayer.value.clearLayers();
+
+    if (filteredMonsterList.value?.length > 0) {
+      filteredMonsterList.value.forEach((monster) => {
+        const newMarker = L.marker([monster.lat, monster.lng], {
+          icon: L.icon({
+            iconUrl: `/images/${monster.monsterName}.png`,
+            iconSize: [50, 50],
+          }),
+          opacity: 1.0,
+        })
+          .bindPopup(`<b>編號：${monster.serialNum}`)
+          .addTo(markersLayer.value);
+
+        newMarker.on("click", function () {
+          filteredMonsterList.value = [
+            monsterList.value.find((target) => monster.serialNum === target.serialNum),
+          ];
+        });
+      });
+    }
+  }
+
+  return { currentLatitude, currentLongitude, filterData, openStreetMap, markersLayer, getCurrentPosition, getSheetNameAndExpiredTime, getFilteredData, addMarker }
 })
