@@ -1,13 +1,17 @@
 <script setup>
 import { onMounted } from "vue";
+import { storeToRefs } from "pinia";
 import { useEyewitnessInfoStore } from "@/stores/eyewitness-info";
 import { useUserDataStore } from "@/stores/user-data";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { useStateStore } from "@/stores/state";
 import OpenStreetMap from "../components/OpenStreetMap.vue";
 import axios from "axios";
 
+const stateStore = useStateStore();
 const { filteredMonsterList } = useEyewitnessInfoStore();
 const { filterData, getSheetNameAndExpiredTime } = useUserDataStore();
+const { toggleMap } = storeToRefs(stateStore);
 
 const googleScriptUrl =
   "https://script.google.com/macros/s/AKfycby1mKeTOO9bSG8BdwdSH_MjxDr_UkXL2p6ZJZ000XBnLa3Sx-77ATEde54OvYF1BkX9ig/exec";
@@ -54,8 +58,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <OpenStreetMap />
-  <div class="container d-flex flex-column align-items-center">
+  <div class="map-container" :class="{ hidden: !toggleMap }">
+    <OpenStreetMap />
+  </div>
+  <div class="container d-flex flex-wrap justify-content-center">
     <div
       v-if="filteredMonsterList.value?.length > 0"
       v-for="(info, index) in filteredMonsterList.value"
@@ -121,16 +127,35 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.map-container {
+  height: 30%;
+  width: calc(70% + 60px);
+  margin-top: 20px;
+  border: 3px solid #c0b08e;
+  border-radius: 30px;
+  position: absolute;
+  z-index: 1;
+  bottom: 120px;
+  background-color: #fcf4e9;
+  &.hidden {
+    z-index: -1;
+  }
+}
 .container {
   width: 100%;
   height: 100%;
   padding-bottom: 20px;
+  border-radius: 30px;
+  background-color: #fcf4e9;
   overflow: scroll;
+  position: relative;
+  z-index: 0;
 
   .monster-card {
-    width: 88%;
+    width: 300px;
+    height: 145px;
     margin-top: 20px;
-    padding: 5% 3%;
+    padding: 15px;
     border-radius: 20px;
     background-color: #e2f0d6;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
@@ -221,38 +246,53 @@ onMounted(() => {
         font-size: 0.9rem;
       }
     }
-
-    @media (min-width: 435px) {
-      .park-img {
-        width: 40px;
-        height: 50px;
-        top: -10px;
-        left: -20px;
-      }
-      .info {
-        font-size: 1rem;
-        & div {
-          margin-bottom: 10px;
-        }
+  }
+}
+@media (min-width: 435px) {
+  .map-container {
+    width: 70%;
+    bottom: 160px;
+  }
+  .container {
+    .park-img {
+      width: 40px;
+      height: 50px;
+      top: -10px;
+      left: -20px;
+    }
+    .info {
+      font-size: 1rem;
+      & div {
+        margin-bottom: 10px;
       }
     }
+  }
+}
 
-    @media (min-width: 768px) {
-      .remove {
-        width: 50px;
-        font-size: 1rem;
-      }
-      .park-img {
-        width: 50px;
-        height: 60px;
-        top: -10px;
-        left: -25px;
-      }
-      .info {
-        font-size: 1.2rem;
-        & div {
-          margin-bottom: 20px;
-        }
+@media (min-width: 768px) {
+  .map-container {
+    height: 38%;
+    bottom: 160px;
+  }
+
+  .container {
+    .monster-card {
+      margin: 10px;
+    }
+    .remove {
+      width: 50px;
+      font-size: 1rem;
+    }
+    .park-img {
+      width: 50px;
+      height: 60px;
+      top: -10px;
+      left: -25px;
+    }
+    .info {
+      font-size: 1.2rem;
+      & div {
+        margin-bottom: 20px;
       }
     }
   }

@@ -9,7 +9,7 @@ const userDataStore = useUserDataStore();
 const stateStore = useStateStore();
 const { getCurrentPosition, openStreetMap, markersLayer } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
-const { showMap } = storeToRefs(stateStore);
+const { toggleMap } = storeToRefs(stateStore);
 
 onMounted(async () => {
   await getCurrentPosition();
@@ -40,13 +40,8 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 #map {
-  height: 60%;
-  width: 85%;
-  margin-top: 20px;
-  border: 3px solid #c0b08e;
+  height: 100%;
+  width: 100%;
   border-radius: 30px;
-  position: relative;
-  z-index: 10;
-  background-color: #fcf4e9;
 }
 </style>

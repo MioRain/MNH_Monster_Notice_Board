@@ -18,7 +18,7 @@ const {
   markersLayer,
 } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
-const { loadingStyle, filterMode, showMap } = storeToRefs(stateStore);
+const { loadingStyle, filterMode, toggleMap } = storeToRefs(stateStore);
 const {
   eyewitnessInfo,
   monsterList,
@@ -109,7 +109,7 @@ const handelFilter = () => {
       (a, b) => a.distance - b.distance
     );
   }
-  mapSwitch();
+  addMarker();
   localStorage.setItem("filterData", JSON.stringify(filterData));
 };
 
@@ -160,7 +160,7 @@ const fetchMonsterList = async () => {
 
     if (!filteredMonsterList.value.length) alert("沒有符合篩選條件的情報");
 
-    mapSwitch();
+    addMarker();
 
     loadingStyle.value = false;
   } catch (error) {
@@ -171,8 +171,11 @@ const fetchMonsterList = async () => {
   }
 };
 
-function mapSwitch() {
-  showMap.value = !showMap.value;
+const mapSwitch = () => {
+  toggleMap.value = !toggleMap.value
+}
+
+function addMarker() {
   markersLayer.value.clearLayers();
 
   if (filteredMonsterList.value?.length > 0) {
@@ -418,7 +421,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .container {
   width: 100%;
-  height: 180px;
+  height: 120px;
   background-color: #fcf4e9;
   border-top: 5px solid #c0b08e;
   border-radius: 0 0 30px 30px;
@@ -532,13 +535,6 @@ span {
     }
   }
 }
-
-.map {
-    pointer-events: none;
-    background-color: #c0b08e;
-    opacity: 0.3;
-  }
-
 
 #announceModal {
   .modal-content {
