@@ -15,10 +15,13 @@ export const useUserDataStore = defineStore('user-data', () => {
   const filterData = reactive({
     date: '',
     filteredNum: [],
+    huntedNum: [],
+    removedNum: [],
     round: 0,
     rare: 0,
     monsterName: '',
-    distance: 0
+    distance: 0,
+    isMap: false
   })
   const openStreetMap = reactive({})
   const markersLayer = reactive({})
@@ -55,6 +58,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   function getFilteredData(data) {
     return data
       .filter((item) => {
+        if (filterData.isMap && (item.isHunted || item.isRemoved)) return true
         const condition1 = !filterData.filteredNum?.includes(item.serialNum);
         const condition2 = filterData.round ? filterData.round === item.round : true;
         const condition3 = filterData.rare ? filterData.rare >= item.rare : true;
@@ -65,20 +69,21 @@ export const useUserDataStore = defineStore('user-data', () => {
           filterData.distance > 0
             ? Number(item.distance) < filterData.distance
             : Number(item.distance) > 0;
+        const condition6 = !item.isHunted && !item.isRemoved;
 
-        if (condition1 && condition2 && condition3 && condition4 && condition5)
-          return true;
+        if (condition1 && condition2 && condition3 && condition4 && condition5 && condition6) return true;
       })
   }
 
   function addMarker() {
-    markersLayer.value?.clearLayers();
-
-    if (filteredMonsterList.value?.length > 0) {
-      filteredMonsterList.value.forEach((monster) => {
+    if (monsterList.value?.length > 0) {
+      markersLayer.value?.clearLayers();
+      filterData.isMap = true
+      const newArr = getFilteredData(monsterList.value)
+      newArr.forEach((monster) => {
         const newMarker = L.marker([monster.lat, monster.lng], {
           icon: L.icon({
-            iconUrl: `/images/${monster.monsterName}.png`,
+            iconUrl: monster.isHunted ? `/images/complete.png` : monster.isRemoved ? `/images/fail.png` : `/images/${monster.monsterName}.png`,
             iconSize: [50, 50],
           }),
           opacity: 1.0,
@@ -92,6 +97,7 @@ export const useUserDataStore = defineStore('user-data', () => {
           ];
         });
       });
+      filterData.isMap = false
     }
   }
 

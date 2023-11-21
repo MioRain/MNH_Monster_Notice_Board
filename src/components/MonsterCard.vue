@@ -9,21 +9,32 @@ import OpenStreetMap from "../components/OpenStreetMap.vue";
 import axios from "axios";
 
 const stateStore = useStateStore();
-const { filteredMonsterList } = useEyewitnessInfoStore();
-const { filterData, getSheetNameAndExpiredTime } = useUserDataStore();
+const { monsterList, filteredMonsterList } = useEyewitnessInfoStore();
+const { filterData, getSheetNameAndExpiredTime, addMarker } = useUserDataStore();
 const { toggleMap } = storeToRefs(stateStore);
 
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycby1mKeTOO9bSG8BdwdSH_MjxDr_UkXL2p6ZJZ000XBnLa3Sx-77ATEde54OvYF1BkX9ig/exec";
+  "https://script.google.com/macros/s/AKfycbxMC_lZmSSp7baWOZesfIKYUSJuJN_5dokrBYebjDr86Kb-lr8mH-FAoUZT2GxofgzVWA/exec";
 
 const remove = async (action, serialNum, index) => {
   if (confirm(action === "hunted" ? "是否確定討伐？" : "是否確定移除？")) {
     const date = moment().format("YYYY/M/D");
+    const targetMonster = monsterList.value.find((item) => item.serialNum === serialNum);
 
-    if (filterData.date === date) {
+    if ((action === "hunted" || action === "removed") && filterData.date === date) {
+      const actionKey = `${action}Num`;
+      filterData[actionKey].push(serialNum);
       filterData.filteredNum.push(serialNum);
+
+      if (action === "hunted") {
+        targetMonster.isHunted = true;
+      } else if (action === "removed") {
+        targetMonster.isRemoved = true;
+      }
     } else {
       filterData.date = date;
+      const actionKey = `${action}Num`;
+      filterData[actionKey] = [serialNum];
       filterData.filteredNum = [serialNum];
     }
 
@@ -36,6 +47,9 @@ const remove = async (action, serialNum, index) => {
       sheetName,
       serialNum,
     };
+
+    addMarker();
+
     await axios.post(googleScriptUrl, payload, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -47,9 +61,19 @@ const remove = async (action, serialNum, index) => {
 onMounted(() => {
   const filterDataStore = JSON.parse(localStorage.getItem("filterData"));
   if (filterDataStore) {
-    const { date, filteredNum, round, rare, monsterName } = filterDataStore;
+    const {
+      date,
+      filteredNum,
+      huntedNum,
+      removedNum,
+      round,
+      rare,
+      monsterName,
+    } = filterDataStore;
     filterData.date = date;
     filterData.filteredNum = filteredNum;
+    filterData.huntedNum = huntedNum;
+    filterData.removedNum = removedNum;
     filterData.round = round;
     filterData.rare = rare;
     filterData.monsterName = monsterName;
@@ -66,9 +90,16 @@ onMounted(() => {
       v-if="filteredMonsterList.value?.length > 0"
       v-for="(info, index) in filteredMonsterList.value"
       class="monster-card d-flex justify-content-center pb-4"
+      :class="{ disable: info.isHunted || info.isRemoved }"
     >
       <button class="remove" @click="remove('removed', info.serialNum, index)">Ｘ</button>
       <img v-if="/true/i.test(info.isPark)" class="park-img" src="/images/tree.png" />
+      <div v-if="info.isHunted || info.isRemoved" class="cover">
+        <img
+          :class="{ fail: info.isRemoved, complete: info.isHunted }"
+          :src="info.isRemoved ? '/images/fail.png' : '/images/complete.png'"
+        />
+      </div>
 
       <div class="monster-img-container d-flex flex-column">
         <div class="monster-rare d-flex justify-content-center mb-2">
@@ -161,6 +192,10 @@ onMounted(() => {
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
     position: relative;
 
+    &.disable {
+      pointer-events: none;
+    }
+
     .remove {
       width: 35px;
       position: absolute;
@@ -180,6 +215,30 @@ onMounted(() => {
       position: absolute;
       top: -10px;
       left: -15px;
+    }
+    .cover {
+      width: 100%;
+      height: 100%;
+      padding: 10%;
+      border-radius: 20px;
+      position: absolute;
+      top: 0;
+      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.5);
+
+      .complete,
+      .fail {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      .fail {
+        width: 90%;
+        height: 90%;
+        top: 5%;
+        left: 5%;
+        transform: rotate(-7deg);
+      }
     }
     .monster-img-container {
       width: 25%;

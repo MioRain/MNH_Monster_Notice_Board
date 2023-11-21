@@ -14,7 +14,7 @@ const {
   getSheetNameAndExpiredTime,
   getFilteredData,
   addMarker,
-  filterData
+  filterData,
 } = useUserDataStore();
 const { currentLatitude, currentLongitude } = storeToRefs(userDataStore);
 const { loadingStyle, filterMode, toggleMap } = storeToRefs(stateStore);
@@ -27,7 +27,7 @@ const {
 
 const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbx1moX8y72JlTvKWSVe7U6-CsPyxOItMiH5JcJdokp2bUK3DTkseCt6wmBIf0SpW7i46g/exec";
+  "https://script.google.com/macros/s/AKfycbxMC_lZmSSp7baWOZesfIKYUSJuJN_5dokrBYebjDr86Kb-lr8mH-FAoUZT2GxofgzVWA/exec";
 
 const handleSubmit = async () => {
   try {
@@ -78,9 +78,11 @@ const handleSubmit = async () => {
       });
 
       if (filterData.date === date) {
+        filterData.huntedNun.push(res.data);
         filterData.filteredNum.push(res.data);
       } else {
         filterData.date = date;
+        filterData.huntedNun = [res.data];
         filterData.filteredNum = [res.data];
       }
 
@@ -148,8 +150,9 @@ const fetchMonsterList = async () => {
         mapLink: data[9],
         distance: Number.parseFloat(distance).toFixed(3),
         likeRatio: likeRatio ? `${likeRatio}%` : "",
+        isHunted: filterData.huntedNum.includes(data[0]),
+        isRemoved: filterData.removedNum.includes(data[0]),
       };
-
       return monsterInfo;
     });
 
@@ -159,14 +162,14 @@ const fetchMonsterList = async () => {
 
     if (!filteredMonsterList.value.length) alert("沒有符合篩選條件的情報");
 
-    addMarker();
-
     loadingStyle.value = false;
   } catch (error) {
     console.error(error);
     monsterList.value = [];
-    alert(error === '無法使用定位功能' ? '無法使用定位功能' : "暫無魔物目擊情報");
+    alert(error === "無法使用定位功能" ? "無法使用定位功能" : "暫無魔物目擊情報");
     loadingStyle.value = false;
+  } finally {
+    addMarker();
   }
 };
 
@@ -380,7 +383,7 @@ onMounted(async () => {
                 filterData.round = 0;
                 filterData.rare = 0;
                 filterData.monsterName = '';
-                filterData.distance = 30;
+                filterData.distance = 0;
               }
             "
           >
