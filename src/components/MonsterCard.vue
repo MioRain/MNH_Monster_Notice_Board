@@ -61,7 +61,7 @@ onMounted(() => {
   <div class="map-container" :class="{ hidden: !toggleMap }">
     <OpenStreetMap />
   </div>
-  <div class="container d-flex flex-wrap justify-content-center">
+  <div class="container d-flex flex-wrap justify-content-center align-content-start">
     <div
       v-if="filteredMonsterList.value?.length > 0"
       v-for="(info, index) in filteredMonsterList.value"
