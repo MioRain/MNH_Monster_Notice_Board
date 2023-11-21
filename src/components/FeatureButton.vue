@@ -165,7 +165,7 @@ const fetchMonsterList = async () => {
   } catch (error) {
     console.error(error);
     monsterList.value = [];
-    alert("暫無魔物目擊情報");
+    alert(error === '無法使用定位功能' ? '無法使用定位功能' : "暫無魔物目擊情報");
     loadingStyle.value = false;
   }
 };

@@ -31,10 +31,7 @@ export const useUserDataStore = defineStore('user-data', () => {
           currentLongitude.value = position.coords.longitude
           return resolve(position)
         },
-        error => {
-          console.warn(`ERROR(${err.code}): ${err.message}`)
-          return reject(error)
-        }
+        error => { reject('無法使用定位功能') }
       )
     })
   }
@@ -75,7 +72,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   }
 
   function addMarker() {
-    markersLayer.value.clearLayers();
+    markersLayer.value?.clearLayers();
 
     if (filteredMonsterList.value?.length > 0) {
       filteredMonsterList.value.forEach((monster) => {
