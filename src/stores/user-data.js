@@ -51,7 +51,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     const now = moment()
     const sheetName = now.hour() === 23 ? now.add(1, 'days').format('YYYY/M/D') : now.format('YYYY/M/D')
     const expiredHour = isPark ? now.hour() + 1 : getStartHour(now.hour() + 3)
-    const expiredTime = now.hours(expiredHour).minutes(0).seconds(0).milliseconds(0).format()
+    const expiredTime = now.subtract(1, 'days').hours(expiredHour).minutes(0).seconds(0).milliseconds(0).format()
     return { sheetName, expiredTime }
   }
 
