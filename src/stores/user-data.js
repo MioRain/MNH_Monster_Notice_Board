@@ -21,7 +21,7 @@ export const useUserDataStore = defineStore('user-data', () => {
     rare: 0,
     monsterName: '',
     distance: 0,
-    isMap: false
+    isMap: false,
   })
   const openStreetMap = reactive({})
   const markersLayer = reactive({})

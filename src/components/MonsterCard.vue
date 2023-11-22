@@ -71,9 +71,9 @@ onMounted(() => {
       monsterName,
     } = filterDataStore;
     filterData.date = date;
-    filterData.filteredNum = filteredNum;
-    filterData.huntedNum = huntedNum;
-    filterData.removedNum = removedNum;
+    filterData.filteredNum = filteredNum?.length >= 0 ? filteredNum : [];
+    filterData.huntedNum = huntedNum?.length >= 0 ? huntedNum : [];
+    filterData.removedNum = removedNum?.length >= 0 ? removedNum : [];
     filterData.round = round;
     filterData.rare = rare;
     filterData.monsterName = monsterName;
