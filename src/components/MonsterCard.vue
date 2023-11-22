@@ -14,7 +14,7 @@ const { filterData, getSheetNameAndExpiredTime, addMarker } = useUserDataStore()
 const { toggleMap } = storeToRefs(stateStore);
 
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbxMC_lZmSSp7baWOZesfIKYUSJuJN_5dokrBYebjDr86Kb-lr8mH-FAoUZT2GxofgzVWA/exec";
+  "https://script.google.com/macros/s/AKfycbwVnHAVCMKFDAv-GAS2mJx9EZG7hdl9GnV2qdk7WiGZftwnz5bRe1v6eKFYc6pU3FEZeg/exec";
 
 const remove = async (action, serialNum, index) => {
   if (confirm(action === "hunted" ? "是否確定討伐？" : "是否確定移除？")) {

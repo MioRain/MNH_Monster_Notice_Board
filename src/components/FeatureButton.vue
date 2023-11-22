@@ -27,7 +27,7 @@ const {
 
 const rareMonsterList = ["櫻火龍", "黑角龍"];
 const googleScriptUrl =
-  "https://script.google.com/macros/s/AKfycbxMC_lZmSSp7baWOZesfIKYUSJuJN_5dokrBYebjDr86Kb-lr8mH-FAoUZT2GxofgzVWA/exec";
+  "https://script.google.com/macros/s/AKfycbwVnHAVCMKFDAv-GAS2mJx9EZG7hdl9GnV2qdk7WiGZftwnz5bRe1v6eKFYc6pU3FEZeg/exec";
 
 const handleSubmit = async () => {
   try {
@@ -70,7 +70,7 @@ const handleSubmit = async () => {
         longitude: currentLongitude.value,
         mapLink: `https://www.google.com/maps/place/${currentLatitude.value},${currentLongitude.value}`,
       };
-
+      
       const res = await axios.post(googleScriptUrl, payload, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
