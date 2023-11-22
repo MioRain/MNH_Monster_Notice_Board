@@ -169,6 +169,7 @@ onMounted(() => {
   bottom: 120px;
   background-color: #fcf4e9;
   &.hidden {
+    width: 50%;
     z-index: -1;
   }
 }
