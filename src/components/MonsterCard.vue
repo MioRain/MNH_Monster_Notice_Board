@@ -179,9 +179,32 @@ onMounted(() => {
   padding-bottom: 20px;
   border-radius: 30px;
   background-color: #fcf4e9;
-  overflow: scroll;
+  overflow-y: overlay;
   position: relative;
   z-index: 0;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-button {
+    height: 10px;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-track-piece {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    // height: 10%;
+    background: #c0b08e;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    box-shadow: transparent;
+  }
 
   .monster-card {
     width: 300px;
