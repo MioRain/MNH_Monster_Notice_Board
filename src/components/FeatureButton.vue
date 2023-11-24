@@ -78,11 +78,12 @@ const handleSubmit = async () => {
       });
 
       if (filterData.date === date) {
-        filterData.huntedNun.push(res.data);
+        console.log(filterData)
+        filterData.huntedNum.push(res.data);
         filterData.filteredNum.push(res.data);
       } else {
         filterData.date = date;
-        filterData.huntedNun = [res.data];
+        filterData.huntedNum = [res.data];
         filterData.filteredNum = [res.data];
       }
 
